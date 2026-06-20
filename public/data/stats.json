@@ -1,0 +1,263 @@
+{
+  "dataSource": "国家统计局公开数据整理（兜底）",
+  "updateTime": "2026-06-20",
+  "indicators": [
+    {
+      "name": "城镇登记失业率",
+      "unit": "%",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 4.24
+        },
+        {
+          "year": 2021,
+          "value": 3.96
+        },
+        {
+          "year": 2022,
+          "value": 5.5
+        },
+        {
+          "year": 2023,
+          "value": 5.2
+        },
+        {
+          "year": 2024,
+          "value": 5.1
+        }
+      ],
+      "description": "城镇登记失业人数占城镇从业人数与城镇登记失业人数之和的比"
+    },
+    {
+      "name": "城镇调查失业率",
+      "unit": "%",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 5.6
+        },
+        {
+          "year": 2021,
+          "value": 5.1
+        },
+        {
+          "year": 2022,
+          "value": 5.5
+        },
+        {
+          "year": 2023,
+          "value": 5.2
+        },
+        {
+          "year": 2024,
+          "value": 5.1
+        }
+      ],
+      "description": "城镇调查失业率（年度平均）"
+    },
+    {
+      "name": "城镇新增就业人数",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 1186
+        },
+        {
+          "year": 2021,
+          "value": 1269
+        },
+        {
+          "year": 2022,
+          "value": 1206
+        },
+        {
+          "year": 2023,
+          "value": 1244
+        },
+        {
+          "year": 2024,
+          "value": 1256
+        }
+      ],
+      "description": "城镇新增就业人数（年度）"
+    },
+    {
+      "name": "城镇登记失业人数",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 1041
+        },
+        {
+          "year": 2021,
+          "value": 1040
+        },
+        {
+          "year": 2022,
+          "value": 1183
+        },
+        {
+          "year": 2023,
+          "value": 1179
+        },
+        {
+          "year": 2024,
+          "value": 1170
+        }
+      ],
+      "description": "城镇登记失业人数（年末）"
+    },
+    {
+      "name": "就业人员总数",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 75064
+        },
+        {
+          "year": 2021,
+          "value": 74652
+        },
+        {
+          "year": 2022,
+          "value": 73351
+        },
+        {
+          "year": 2023,
+          "value": 74041
+        },
+        {
+          "year": 2024,
+          "value": 73439
+        }
+      ],
+      "description": "全国就业人员年末人数"
+    },
+    {
+      "name": "第一产业就业人员",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 17715
+        },
+        {
+          "year": 2021,
+          "value": 17072
+        },
+        {
+          "year": 2022,
+          "value": 16663
+        },
+        {
+          "year": 2023,
+          "value": 16888
+        },
+        {
+          "year": 2024,
+          "value": 16547
+        }
+      ],
+      "description": "第一产业就业人员年末人数"
+    },
+    {
+      "name": "第二产业就业人员",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 21543
+        },
+        {
+          "year": 2021,
+          "value": 21219
+        },
+        {
+          "year": 2022,
+          "value": 21132
+        },
+        {
+          "year": 2023,
+          "value": 21579
+        },
+        {
+          "year": 2024,
+          "value": 21467
+        }
+      ],
+      "description": "第二产业就业人员年末人数"
+    },
+    {
+      "name": "第三产业就业人员",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 35806
+        },
+        {
+          "year": 2021,
+          "value": 36361
+        },
+        {
+          "year": 2022,
+          "value": 35556
+        },
+        {
+          "year": 2023,
+          "value": 35574
+        },
+        {
+          "year": 2024,
+          "value": 35425
+        }
+      ],
+      "description": "第三产业就业人员年末人数"
+    },
+    {
+      "name": "高校毕业生人数",
+      "unit": "万人",
+      "yearly": [
+        {
+          "year": 2020,
+          "value": 874
+        },
+        {
+          "year": 2021,
+          "value": 909
+        },
+        {
+          "year": 2022,
+          "value": 1076
+        },
+        {
+          "year": 2023,
+          "value": 1158
+        },
+        {
+          "year": 2024,
+          "value": 1179
+        },
+        {
+          "year": 2025,
+          "value": 1222
+        },
+        {
+          "year": 2026,
+          "value": 1265
+        }
+      ],
+      "description": "全国普通高校毕业生人数（教育部数据）"
+    }
+  ],
+  "summary": {
+    "latestUnemploymentRate": 5.1,
+    "latestNewJobs": 1256,
+    "latestTotalEmployment": 73439,
+    "trend": "城镇调查失业率保持在5.1%-5.5%区间，就业形势总体稳定"
+  }
+}
