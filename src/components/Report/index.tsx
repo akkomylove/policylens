@@ -16,9 +16,9 @@ import {
   getCachedInterpretation,
   setCachedInterpretation,
 } from "@/lib/ai";
-import { useAppStore, ApplicationStatus } from "@/lib/store";
+import { useAppStore, ApplicationStatus, ApplicationProgress, ApplicationStep } from "@/lib/store";
 import { generateShareLink } from "@/lib/share";
-import { getEffectiveStatusInfo, getCountdownInfo } from "@/lib/effectiveStatus";
+import { getEffectiveStatusInfo, getCountdownInfo, getEligibilityWindow } from "@/lib/effectiveStatus";
 import CompareModal from "./CompareModal";
 import ApplicationRoadmap from "./ApplicationRoadmap";
 
@@ -120,6 +120,127 @@ function getApplicationStatusInfo(status: ApplicationStatus): {
     case "done":
       return { label: "已通过", color: "#10b981", bgColor: "#d1fae5", icon: "✓" };
   }
+}
+
+// ============ V5：4 步申请进度条 ============
+const APPLICATION_STEPS: { key: ApplicationStep; label: string; icon: string }[] = [
+  { key: "materials", label: "材料", icon: "📋" },
+  { key: "submitted", label: "提交", icon: "📨" },
+  { key: "reviewed", label: "审核", icon: "🔍" },
+  { key: "received", label: "领取", icon: "🎉" },
+];
+
+function ApplicationProgressBar({
+  progress,
+  onToggleStep,
+  onReset,
+}: {
+  progress?: ApplicationProgress;
+  onToggleStep: (step: ApplicationStep) => void;
+  onReset: () => void;
+}) {
+  // 默认状态：全部未完成
+  const steps = progress?.steps ?? {
+    materials: false,
+    submitted: false,
+    reviewed: false,
+    received: false,
+  };
+  const completedCount = Object.values(steps).filter(Boolean).length;
+  const isAllDone = completedCount === 4;
+  const isStarted = completedCount > 0;
+
+  // 计算下一步可点击的步骤（已完成的下一步）
+  const stepOrder: ApplicationStep[] = ["materials", "submitted", "reviewed", "received"];
+  let nextClickableIdx = 0;
+  for (let i = 0; i < stepOrder.length; i++) {
+    if (steps[stepOrder[i]]) {
+      nextClickableIdx = i + 1;
+    } else {
+      break;
+    }
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-gray-100">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-gray-500">
+          申请进度
+          {isStarted && (
+            <span className="ml-1.5 text-[10px] text-gray-400">
+              ({completedCount}/4)
+            </span>
+          )}
+        </span>
+        {isStarted && (
+          <button
+            onClick={onReset}
+            className="text-[10px] text-gray-400 hover:text-red-500 transition-colors"
+            title="重置进度"
+          >
+            重置
+          </button>
+        )}
+      </div>
+
+      {/* 4 步进度条 */}
+      <div className="flex items-center gap-1">
+        {APPLICATION_STEPS.map((step, idx) => {
+          const done = steps[step.key];
+          // 可点击：已完成 OR 是当前下一步
+          const isClickable = done || idx === nextClickableIdx;
+          return (
+            <div key={step.key} className="flex items-center flex-1 last:flex-none">
+              <button
+                onClick={() => isClickable && onToggleStep(step.key)}
+                disabled={!isClickable}
+                className={`
+                  flex flex-col items-center gap-0.5 flex-1 py-1.5 px-1 rounded-lg text-[10px] font-medium transition-all
+                  ${done
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    : isClickable
+                    ? "bg-white text-gray-600 border border-gray-200 hover:border-emerald-400 hover:bg-emerald-50/50 cursor-pointer"
+                    : "bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed"
+                  }
+                `}
+                title={done ? `已完成：${step.label}（点击取消）` : isClickable ? `标记完成：${step.label}` : "需先完成前一步"}
+              >
+                <span className={`text-sm ${done ? "" : "opacity-50"}`}>
+                  {done ? "✓" : step.icon}
+                </span>
+                <span>{step.label}</span>
+              </button>
+              {/* 连接线 */}
+              {idx < APPLICATION_STEPS.length - 1 && (
+                <div
+                  className={`h-0.5 w-2 mx-0.5 rounded-full transition-colors ${
+                    done && steps[stepOrder[idx + 1]]
+                      ? "bg-emerald-400"
+                      : done
+                      ? "bg-emerald-200"
+                      : "bg-gray-200"
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 完成提示 */}
+      {isAllDone && (
+        <div className="mt-2 text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1 flex items-center gap-1">
+          <span>🎉</span>
+          <span>补贴已领取，恭喜完成申请流程！</span>
+        </div>
+      )}
+      {!isStarted && (
+        <div className="mt-2 text-[10px] text-gray-400">
+          点击「材料」开始跟踪你的申请进度，进度会自动保存到本地。
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ============ 推荐优先级信息映射 ============
@@ -324,6 +445,177 @@ function FilterToolbar({
   );
 }
 
+// ============ V5：地图查看器组件 ============
+function MapViewer({ location }: { location: string }) {
+  const [showMap, setShowMap] = useState(false);
+
+  // 提取地点关键词用于地图搜索
+  const mapQuery = encodeURIComponent(location.replace(/或.*$/, "").trim());
+  // 使用高德地图开放平台 URL，无需 API Key
+  const mapUrl = `https://uri.amap.com/search?keyword=${mapQuery}&src=PolicyLens&coordinate=wgs84&callnative=1`;
+
+  return (
+    <div className="mt-1">
+      <button
+        onClick={() => setShowMap(!showMap)}
+        className="text-[10px] text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1"
+      >
+        <span>{showMap ? "▼" : "▸"}</span>
+        {showMap ? "收起地图" : "查看地图"}
+      </button>
+      {showMap && (
+        <div className="mt-1.5 rounded-lg overflow-hidden border border-gray-200">
+          <iframe
+            src={mapUrl}
+            width="100%"
+            height="200"
+            style={{ border: 0 }}
+            title="办理地点地图"
+            loading="lazy"
+          />
+          <div className="text-[10px] text-gray-400 p-1.5 bg-gray-50">
+            地图由高德地图提供，仅供参考，具体以实际办理地点为准
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============ V5：差几条提示组件 ============
+function ConditionGapDisplay({
+  evaluation,
+}: {
+  evaluation: import("@/types/policy").ConditionEvaluation;
+}) {
+  const {
+    allRequiredMet,
+    satisfiedCount,
+    totalConditions,
+    totalRequired,
+    requiredSatisfiedCount,
+    gapText,
+    results,
+  } = evaluation;
+
+  // 判断状态颜色
+  const failedRequired = results.filter(
+    (r) => !r.passed && r.condition.required
+  );
+  const failedOptional = results.filter(
+    (r) => !r.passed && !r.condition.required
+  );
+
+  let bgColor = "bg-emerald-50";
+  let borderColor = "border-emerald-200";
+  let textColor = "text-emerald-800";
+  let icon = "✓";
+
+  if (failedRequired.length > 0) {
+    bgColor = "bg-red-50";
+    borderColor = "border-red-200";
+    textColor = "text-red-800";
+    icon = "✗";
+  } else if (failedOptional.length > 0) {
+    bgColor = "bg-amber-50";
+    borderColor = "border-amber-200";
+    textColor = "text-amber-800";
+    icon = "⚠";
+  }
+
+  // 满足比例进度条
+  const satisfactionRatio =
+    totalConditions > 0 ? (satisfiedCount / totalConditions) * 100 : 100;
+  const requiredRatio =
+    totalRequired > 0 ? (requiredSatisfiedCount / totalRequired) * 100 : 100;
+
+  return (
+    <div
+      className={`${bgColor} ${borderColor} border rounded-xl p-3 mb-3`}
+    >
+      {/* 头部：状态图标 + gapText */}
+      <div className="flex items-start gap-2 mb-2">
+        <span className={`${textColor} font-bold text-sm`}>{icon}</span>
+        <div className="flex-1">
+          <div className={`text-xs font-medium ${textColor}`}>{gapText}</div>
+          <div className="text-[10px] text-gray-500 mt-0.5">
+            满足 {satisfiedCount}/{totalConditions} 个条件
+            {totalRequired > 0 &&
+              `（核心 ${requiredSatisfiedCount}/${totalRequired}）`}
+          </div>
+        </div>
+      </div>
+
+      {/* 进度条 */}
+      <div className="space-y-1">
+        {totalRequired > 0 && (
+          <div>
+            <div className="flex justify-between text-[10px] text-gray-500 mb-0.5">
+              <span>核心条件</span>
+              <span>{requiredSatisfiedCount}/{totalRequired}</span>
+            </div>
+            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  allRequiredMet ? "bg-emerald-500" : "bg-red-500"
+                }`}
+                style={{ width: `${requiredRatio}%` }}
+              />
+            </div>
+          </div>
+        )}
+        <div>
+          <div className="flex justify-between text-[10px] text-gray-500 mb-0.5">
+            <span>全部条件</span>
+            <span>{satisfiedCount}/{totalConditions}</span>
+          </div>
+          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full transition-all"
+              style={{ width: `${satisfactionRatio}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 未满足条件列表（展开式） */}
+      {(failedRequired.length > 0 || failedOptional.length > 0) && (
+        <details className="mt-2">
+          <summary className={`text-[10px] ${textColor} cursor-pointer hover:underline`}>
+            查看未满足条件（{failedRequired.length + failedOptional.length} 项）
+          </summary>
+          <ul className="mt-1 space-y-0.5 text-[10px] text-gray-600">
+            {failedRequired.map((r) => (
+              <li key={r.condition.id} className="flex items-start gap-1">
+                <span className="text-red-500 flex-shrink-0">✗</span>
+                <span>
+                  <span className="font-medium">{r.condition.label}</span>
+                  {r.actualValue !== undefined && (
+                    <span className="text-gray-400">（当前：{r.actualValue}）</span>
+                  )}
+                  <span className="text-red-400 ml-1">[核心]</span>
+                </span>
+              </li>
+            ))}
+            {failedOptional.map((r) => (
+              <li key={r.condition.id} className="flex items-start gap-1">
+                <span className="text-amber-500 flex-shrink-0">⚠</span>
+                <span>
+                  <span className="font-medium">{r.condition.label}</span>
+                  {r.actualValue !== undefined && (
+                    <span className="text-gray-400">（当前：{r.actualValue}）</span>
+                  )}
+                  <span className="text-amber-400 ml-1">[可选]</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </div>
+  );
+}
+
 // ============ 政策卡片 ============
 function PolicyCard({
   policy,
@@ -335,7 +627,9 @@ function PolicyCard({
   onToggleFavorite,
   onInterpret,
   applicationStatus,
-  onApplicationStatusChange,
+  applicationProgress,
+  onToggleApplicationStep,
+  onResetApplicationProgress,
   isInCompare,
   onToggleCompare,
   compareDisabled,
@@ -349,7 +643,10 @@ function PolicyCard({
   onToggleFavorite: () => void;
   onInterpret: () => void;
   applicationStatus?: ApplicationStatus;
-  onApplicationStatusChange: (status: ApplicationStatus) => void;
+  // V5 新增：4 步进度条
+  applicationProgress?: ApplicationProgress;
+  onToggleApplicationStep: (step: ApplicationStep) => void;
+  onResetApplicationProgress: () => void;
   isInCompare: boolean;
   onToggleCompare: () => void;
   compareDisabled: boolean;
@@ -362,11 +659,21 @@ function PolicyCard({
   const effectiveInfo = policy.effectiveStatus
     ? getEffectiveStatusInfo(policy.effectiveStatus)
     : null;
-  const appStatusInfo = applicationStatus
-    ? getApplicationStatusInfo(applicationStatus)
+  // V5：优先使用 applicationProgress 的 status，回退到旧版 applicationStatus
+  const effectiveStatus: ApplicationStatus | undefined =
+    applicationProgress?.status ?? applicationStatus;
+  const appStatusInfo = effectiveStatus
+    ? getApplicationStatusInfo(effectiveStatus)
     : null;
   const priorityInfo = getPriorityInfo(policy.priority);
   const countdownInfo = getCountdownInfo(policy.deadline);
+
+  // V5 新增：资格窗口期预警
+  const userProfile = useAppStore((s) => s.userProfile);
+  const eligibilityWindow = useMemo(
+    () => getEligibilityWindow(userProfile, policy),
+    [userProfile, policy]
+  );
 
   // V4 新增：标签折叠状态（默认只显示核心 4 个标签）
   const [showMoreTags, setShowMoreTags] = useState(false);
@@ -442,6 +749,20 @@ function PolicyCard({
                 >
                   <span>⏰</span>
                   {countdownInfo.label}
+                </span>
+              )}
+              {/* V5 新增：资格窗口期预警徽章 */}
+              {eligibilityWindow && (
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
+                  style={{
+                    backgroundColor: eligibilityWindow.bgColor,
+                    color: eligibilityWindow.color,
+                  }}
+                  title={eligibilityWindow.detail}
+                >
+                  <span>🎓</span>
+                  {eligibilityWindow.label}
                 </span>
               )}
               {/* 核心标签 4：申请状态（仅已设置时显示） */}
@@ -563,6 +884,11 @@ function PolicyCard({
           </div>
         )}
 
+        {/* V5 新增：差几条提示（原子条件评估结果） */}
+        {policy.conditionEvaluation && (
+          <ConditionGapDisplay evaluation={policy.conditionEvaluation} />
+        )}
+
         {/* 补贴信息（升级版） */}
         {policy.subsidyAmount && (
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 mb-3 border border-amber-100">
@@ -660,7 +986,11 @@ function PolicyCard({
                 {interpretation.applyLocation && (
                   <div className="flex gap-2 items-start">
                     <span className="text-xs text-gray-500 flex-shrink-0 mt-0.5">📍 办理地点：</span>
-                    <span className="text-xs text-gray-700 leading-relaxed">{interpretation.applyLocation}</span>
+                    <div className="flex-1">
+                      <span className="text-xs text-gray-700 leading-relaxed">{interpretation.applyLocation}</span>
+                      {/* V5 新增：查看地图按钮 */}
+                      <MapViewer location={interpretation.applyLocation} />
+                    </div>
                   </div>
                 )}
                 {interpretation.contactPhone && (
@@ -688,6 +1018,32 @@ function PolicyCard({
                     </li>
                   ))}
                 </ol>
+              </div>
+            )}
+
+            {/* V5 新增：立即申报按钮 */}
+            {policy.applyUrl && (
+              <div className="pt-3 border-t border-gray-200">
+                <a
+                  href={policy.applyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors shadow-sm"
+                >
+                  立即申报 →
+                </a>
+                <div className="text-[10px] text-gray-400 text-center mt-1">
+                  点击跳转至官方申报入口
+                </div>
+              </div>
+            )}
+
+            {/* V5 新增：防骗警示（仅有 applyUrl 时显示） */}
+            {policy.applyUrl && (
+              <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="text-[10px] text-amber-800 leading-relaxed">
+                  ⚠️ 防骗警示：本政策唯一官方申报入口为上方按钮。任何收费代办、承诺包过均为骗局，请勿上当。
+                </div>
               </div>
             )}
           </div>
@@ -738,29 +1094,31 @@ function PolicyCard({
           </button>
         )}
 
-        {/* 申请状态切换 + 原文链接 */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">申请进度：</span>
-            <select
-              value={applicationStatus || ""}
-              onChange={(e) => onApplicationStatusChange(e.target.value as ApplicationStatus)}
-              className="px-2 py-1 rounded-lg border border-gray-200 text-xs bg-white focus:outline-none focus:border-emerald-500"
+        {/* V5：4 步申请进度条 + 原文链接 */}
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500">
+              申请进度
+              {applicationProgress && Object.values(applicationProgress.steps).some(Boolean) && (
+                <span className="ml-1.5 text-[10px] text-gray-400">
+                  ({Object.values(applicationProgress.steps).filter(Boolean).length}/4)
+                </span>
+              )}
+            </span>
+            <a
+              href={policy.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-500 hover:underline"
             >
-              <option value="">未设置</option>
-              <option value="todo">待申请</option>
-              <option value="applying">申请中</option>
-              <option value="done">已通过</option>
-            </select>
+              查看政策原文 →
+            </a>
           </div>
-          <a
-            href={policy.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-500 hover:underline"
-          >
-            查看政策原文 →
-          </a>
+          <ApplicationProgressBar
+            progress={applicationProgress}
+            onToggleStep={onToggleApplicationStep}
+            onReset={onResetApplicationProgress}
+          />
         </div>
       </div>
     </div>
@@ -975,6 +1333,11 @@ export default function Report({
   const pendingFilter = useAppStore((s) => s.pendingFilter);
   const setPendingFilter = useAppStore((s) => s.setPendingFilter);
 
+  // V5：申请进度跟踪（4 步进度条，持久化到 store）
+  const storeApplicationProgress = useAppStore((s) => s.applicationProgress);
+  const toggleApplicationStep = useAppStore((s) => s.toggleApplicationStep);
+  const resetApplicationProgress = useAppStore((s) => s.resetApplicationProgress);
+
   // Toast
   const { showToast, ToastEl } = useToast();
 
@@ -1140,7 +1503,9 @@ export default function Report({
     });
   }, []);
 
-  // 申请状态切换
+  // V5：申请状态切换已迁移到 store 的 toggleApplicationStep
+  // 保留 handleApplicationStatusChange 用于旧版数据兼容（如需手动重置）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleApplicationStatusChange = useCallback(
     (policyId: string, status: ApplicationStatus) => {
       setApplicationStatus((prev) => {
@@ -1194,9 +1559,15 @@ export default function Report({
     const easyApplyCount = matchedPolicies.filter(
       (p) => p.difficulty === "easy"
     ).length;
-    const appliedCount = Object.values(applicationStatus).filter(
+    // V5：合并旧版 applicationStatus 和新版 applicationProgress 计算已申请数
+    const appliedFromOld = Object.values(applicationStatus).filter(
       (s) => s === "done" || s === "applying"
     ).length;
+    const appliedFromNew = Object.values(storeApplicationProgress).filter(
+      (p) => p && (p.status === "done" || p.status === "applying")
+    ).length;
+    // 取较大值（避免重复计数）
+    const appliedCount = Math.max(appliedFromOld, appliedFromNew);
     return {
       total: matchedPolicies.length,
       subsidy: totalSubsidyEstimate,
@@ -1204,7 +1575,7 @@ export default function Report({
       easyApply: easyApplyCount,
       applied: appliedCount,
     };
-  }, [matchedPolicies, totalSubsidyEstimate, applicationStatus]);
+  }, [matchedPolicies, totalSubsidyEstimate, applicationStatus, storeApplicationProgress]);
 
   // 筛选+排序
   const filteredPolicies = useMemo(() => {
@@ -1494,7 +1865,9 @@ export default function Report({
               onToggleFavorite={() => toggleFavorite(policy.id)}
               onInterpret={() => handleInterpret(policy)}
               applicationStatus={appStatusLoaded ? applicationStatus[policy.id] : undefined}
-              onApplicationStatusChange={(status) => handleApplicationStatusChange(policy.id, status)}
+              applicationProgress={storeApplicationProgress[policy.id]}
+              onToggleApplicationStep={(step) => toggleApplicationStep(policy.id, step)}
+              onResetApplicationProgress={() => resetApplicationProgress(policy.id)}
               isInCompare={compareIds.has(policy.id)}
               onToggleCompare={() => toggleCompare(policy.id)}
               compareDisabled={compareIds.size >= 3}

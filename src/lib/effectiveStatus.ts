@@ -1,4 +1,4 @@
-import { Policy } from "@/types/policy";
+import { Policy, UserProfile } from "@/types/policy";
 
 /**
  * 政策时效性计算工具
@@ -136,5 +136,90 @@ export function getCountdownInfo(deadline: string | undefined): {
     label: `还剩 ${daysLeft} 天`,
     color: "#10b981",
     bgColor: "#d1fae5",
+  };
+}
+
+/**
+ * V5 新增：计算资格窗口期预警
+ * 基于用户身份和毕业年份，计算"距失去资格还剩多少天"
+ *
+ * 规则：
+ * - 应届毕业生：毕业满 2 年失去部分政策资格
+ * - 往届毕业生：毕业满 5 年失去部分政策资格
+ * - 退役军人：退役满 3 年失去部分创业补贴资格
+ * - 其他身份：返回 null
+ */
+export function getEligibilityWindow(
+  userProfile: UserProfile,
+  policy: Policy
+): {
+  label: string; // "资格窗口期：还剩 365 天"
+  detail: string; // "您将于 2027-06-30 失去应届毕业生身份"
+  urgency: "high" | "medium" | "low";
+  color: string;
+  bgColor: string;
+} | null {
+  const { identity, graduationYear } = userProfile;
+
+  // 仅对需要毕业年份的身份计算
+  if (
+    !graduationYear ||
+    (identity !== "应届毕业生" && identity !== "往届毕业生")
+  ) {
+    return null;
+  }
+
+  // 检查政策是否针对毕业生（否则不显示窗口期预警）
+  const isGraduatePolicy =
+    policy.applicableGroups.some((g) =>
+      ["应届", "毕业", "高校毕业生", "往届"].some((k) => g.includes(k))
+    ) ||
+    policy.requirements.some((r) =>
+      ["应届", "毕业", "高校毕业生", "往届"].some((k) => r.includes(k))
+    );
+
+  if (!isGraduatePolicy) return null;
+
+  // 计算资格失效日期
+  const loseYears = identity === "应届毕业生" ? 2 : 5;
+  const loseDate = new Date(`${graduationYear + loseYears}-06-30`);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const daysLeft = Math.floor(
+    (loseDate.getTime() - now.getTime()) / ONE_DAY
+  );
+
+  // 已过期
+  if (daysLeft < 0) return null;
+
+  // 计算紧迫度
+  let urgency: "high" | "medium" | "low";
+  let color: string;
+  let bgColor: string;
+
+  if (daysLeft <= 90) {
+    urgency = "high";
+    color = "#ef4444";
+    bgColor = "#fee2e2";
+  } else if (daysLeft <= 365) {
+    urgency = "medium";
+    color = "#f59e0b";
+    bgColor = "#fef3c7";
+  } else {
+    urgency = "low";
+    color = "#10b981";
+    bgColor = "#d1fae5";
+  }
+
+  const loseDateStr = `${graduationYear + loseYears}年6月30日`;
+  const identityLabel =
+    identity === "应届毕业生" ? "应届毕业生" : "毕业生";
+
+  return {
+    label: `资格窗口期：还剩 ${daysLeft} 天`,
+    detail: `您将于 ${loseDateStr} 失去${identityLabel}相关政策的申请资格`,
+    urgency,
+    color,
+    bgColor,
   };
 }

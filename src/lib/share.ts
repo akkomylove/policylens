@@ -22,8 +22,8 @@ export function encodeUserProfile(profile: UserProfile): string {
   const compact: Record<string, string> = {};
   for (const field of FIELD_ORDER) {
     const value = profile[field];
-    if (value) {
-      compact[field] = value;
+    if (value !== undefined && value !== null && value !== "") {
+      compact[field] = String(value);
     }
   }
   const json = JSON.stringify(compact);

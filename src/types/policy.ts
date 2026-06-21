@@ -19,6 +19,50 @@ export interface Policy {
   effectiveStatus?: "active" | "expiring" | "expired";
   // V3 新增：同类用户成功申请数（模拟数据）
   successCount?: number;
+  // V5 新增：官方申报入口 URL
+  applyUrl?: string;
+  // V5 新增：原子条件数组（颗粒化拆解）
+  atomicConditions?: AtomicCondition[];
+}
+
+// V5 新增：原子条件（政策要素颗粒化）
+export interface AtomicCondition {
+  id: string; // 条件唯一标识
+  category:
+    | "identity"
+    | "age"
+    | "education"
+    | "region"
+    | "status"
+    | "industry"
+    | "socialSecurity"
+    | "business"
+    | "graduationYear"
+    | "other";
+  label: string; // 条件描述（如"年龄<35岁"）
+  operator: "lt" | "lte" | "gt" | "gte" | "eq" | "in" | "contains" | "range";
+  value: string | number | string[]; // 比较值
+  required: boolean; // 是否必须满足
+  userField?: string; // 对应的用户画像字段（如"age"、"education"）
+}
+
+// V5 新增：条件评估结果
+export interface ConditionResult {
+  condition: AtomicCondition;
+  passed: boolean;
+  actualValue?: string | number;
+  gap?: string; // "差几条"的描述
+}
+
+// V5 新增：原子条件评估汇总
+export interface ConditionEvaluation {
+  results: ConditionResult[];
+  satisfiedCount: number;
+  requiredSatisfiedCount: number;
+  totalRequired: number;
+  totalConditions: number;
+  gapText: string; // "还差 2 个条件：年龄<35岁、社保满6个月"
+  allRequiredMet: boolean;
 }
 
 // 用户画像类型
@@ -53,6 +97,12 @@ export interface UserProfile {
   city: string;
   employmentStatus: EmploymentStatus;
   industryIntent?: IndustryIntent;
+  // V5 新增：年龄（用于原子条件评估）
+  age?: number;
+  // V5 新增：毕业年份（用于资格窗口期计算）
+  graduationYear?: number;
+  // V5 新增：社保缴纳月数（用于原子条件评估）
+  socialSecurityMonths?: number;
 }
 
 // 匹配结果类型
@@ -84,6 +134,8 @@ export interface MatchedPolicy extends Policy {
   priority?: MatchPriority; // 推荐优先级（V2 新增）
   estimatedSubsidy?: string; // 预估补贴
   difficulty?: DifficultyLevel; // 申请难度
+  // V5 新增：原子条件评估结果
+  conditionEvaluation?: ConditionEvaluation;
 }
 
 export interface MatchResult {

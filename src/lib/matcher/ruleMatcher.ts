@@ -1,5 +1,11 @@
 import { Policy, UserProfile, MatchedPolicy, MatchPriority, MatchBreakdown } from "@/types/policy";
 import { calculateDifficulty } from "./scoreCalculator";
+import {
+  evaluateAtomicConditions,
+  adjustScoreByConditions,
+  adjustPriorityByConditions,
+  generateAtomicConditions,
+} from "./atomicConditions";
 
 /**
  * 规则匹配引擎 V2
@@ -314,14 +320,28 @@ export function matchPolicy(policy: Policy, userProfile: UserProfile): MatchedPo
     otherDimsHitCount
   );
 
+  // V5：原子条件评估
+  // 优先使用政策数据中的 atomicConditions，否则自动生成
+  const atomicConditions = policy.atomicConditions || generateAtomicConditions(policy);
+  const conditionEvaluation = evaluateAtomicConditions(atomicConditions, userProfile);
+
+  // 基于原子条件调整匹配分数和优先级
+  let finalScore = Math.min(score, 100);
+  let finalPriority = priority;
+  if (conditionEvaluation) {
+    finalScore = adjustScoreByConditions(finalScore, conditionEvaluation);
+    finalPriority = adjustPriorityByConditions(priority, conditionEvaluation);
+  }
+
   return {
     ...policy,
-    matchScore: Math.min(score, 100),
+    matchScore: finalScore,
     matchReasons,
     matchBreakdown,
-    priority,
+    priority: finalPriority,
     estimatedSubsidy: policy.subsidyAmount || "详见政策原文",
     difficulty: calculateDifficulty(policy),
+    conditionEvaluation: conditionEvaluation ?? undefined,
   };
 }
 
