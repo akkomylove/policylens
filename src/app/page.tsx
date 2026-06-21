@@ -1,65 +1,159 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ProfileForm from "@/components/ProfileForm";
+import { useAppStore } from "@/lib/store";
+import { loadPolicies } from "@/lib/data";
+import { matchAllPolicies } from "@/lib/matcher/ruleMatcher";
+import { calculateSummary } from "@/lib/matcher/scoreCalculator";
+import { enrichPoliciesWithStatus } from "@/lib/effectiveStatus";
+import { getProfileFromUrl } from "@/lib/share";
+import { Policy } from "@/types/policy";
 
 export default function Home() {
+  const router = useRouter();
+  const {
+    userProfile,
+    currentStep,
+    setMatchResult,
+    setLoading,
+    isLoading,
+    setUserProfile,
+    setCurrentStep,
+  } = useAppStore();
+  const [policies, setPolicies] = useState<Policy[]>([]);
+
+  useEffect(() => {
+    loadPolicies().then((data) => setPolicies(enrichPoliciesWithStatus(data)));
+  }, []);
+
+  // 检测 URL 中的分享参数，自动填充表单并触发匹配
+  useEffect(() => {
+    const sharedProfile = getProfileFromUrl();
+    if (sharedProfile && policies.length > 0 && currentStep === 0 && !isLoading) {
+      setUserProfile(sharedProfile);
+      setCurrentStep(3); // 直接触发匹配
+    }
+  }, [policies, currentStep, isLoading, setUserProfile, setCurrentStep]);
+
+  // 当用户完成表单（currentStep === 3）时，执行匹配
+  useEffect(() => {
+    if (currentStep === 3 && policies.length > 0) {
+      setLoading(true);
+      // 加载延迟，让用户看到骨架屏
+      setTimeout(() => {
+        const matched = matchAllPolicies(policies, userProfile);
+        const { totalSubsidyEstimate, summary } = calculateSummary(
+          matched,
+          userProfile
+        );
+
+        setMatchResult({
+          userProfile,
+          matchedPolicies: matched,
+          totalSubsidyEstimate,
+          summary,
+        });
+        setLoading(false);
+        router.push("/report");
+      }, 200);
+    }
+  }, [currentStep, policies, userProfile, setMatchResult, setLoading, router]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+      {/* Hero */}
+      <div className="pt-12 pb-8 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-100 rounded-full mb-4">
+          <span className="text-xs font-medium text-emerald-700">
+            社会服务 · 社会公益
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          就业政策智能解读器
+        </h1>
+        <p className="text-gray-500 text-sm md:text-base max-w-xl mx-auto px-4">
+          填写你的画像，3 分钟知道你能享受哪些就业政策补贴
+        </p>
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
+          <span>已收录 {policies.length} 条政策</span>
+          <span>·</span>
+          <span>覆盖 31 个省份</span>
+          <span>·</span>
+          <span>AI 智能解读</span>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* 表单 */}
+      <div className="pb-16 px-4">
+        {isLoading ? (
+          <div className="w-full max-w-2xl mx-auto space-y-4">
+            {/* 骨架屏：模拟报告头部 */}
+            <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl p-6 animate-pulse">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-6 w-24 bg-emerald-200 rounded-full" />
+                <div className="h-4 w-20 bg-emerald-200 rounded" />
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <div className="h-7 w-20 bg-emerald-200 rounded-full" />
+                <div className="h-7 w-16 bg-emerald-200 rounded-full" />
+                <div className="h-7 w-16 bg-emerald-200 rounded-full" />
+                <div className="h-7 w-20 bg-emerald-200 rounded-full" />
+              </div>
+              <div className="h-4 w-full bg-emerald-200 rounded mb-2" />
+              <div className="h-4 w-3/4 bg-emerald-200 rounded mb-4" />
+              <div className="flex items-baseline gap-2">
+                <div className="h-4 w-24 bg-emerald-200 rounded" />
+                <div className="h-8 w-32 bg-emerald-200 rounded" />
+              </div>
+            </div>
+
+            {/* 骨架屏：模拟 KPI 卡片 */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse"
+                >
+                  <div className="flex justify-between mb-2">
+                    <div className="h-3 w-16 bg-gray-200 rounded" />
+                    <div className="h-4 w-4 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-7 w-20 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+
+            {/* 骨架屏：模拟政策卡片 */}
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-4 w-8 bg-gray-200 rounded" />
+                  <div className="h-5 w-24 bg-gray-200 rounded-full" />
+                  <div className="h-5 w-16 bg-gray-200 rounded-full" />
+                </div>
+                <div className="h-5 w-3/4 bg-gray-200 rounded mb-2" />
+                <div className="h-3 w-1/2 bg-gray-200 rounded mb-4" />
+                <div className="flex gap-2 mb-3">
+                  <div className="h-6 w-20 bg-emerald-100 rounded" />
+                  <div className="h-6 w-24 bg-emerald-100 rounded" />
+                </div>
+                <div className="h-16 w-full bg-amber-50 rounded-xl" />
+              </div>
+            ))}
+
+            <div className="text-center text-sm text-gray-400 pt-2">
+              正在为你匹配政策，请稍候...
+            </div>
+          </div>
+        ) : (
+          <ProfileForm />
+        )}
+      </div>
+    </main>
   );
 }

@@ -15,7 +15,7 @@
       "灵活就业人员"
     ],
     "subsidyType": "其他补贴",
-    "subsidyAmount": "",
+    "subsidyAmount": "职业技能培训补贴1500万人次/年；就业见习补贴；创业担保贷款最高30万元",
     "requirements": [
       "自主创业",
       "灵活就业"
@@ -23,7 +23,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202606/content_7123456.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/content/202606/content_7072481.htm",
+    "deadline": "2026-09-22",
+    "successCount": 463
   },
   {
     "id": "59c2e38d719f",
@@ -55,7 +57,9 @@
     "regions": [
       "宁夏"
     ],
-    "sourceUrl": "http://hrss.nx.gov.cn/xxgk/202606/t20260605_89012.html"
+    "sourceUrl": "https://www.nx.gov.cn/",
+    "deadline": "2026-10-20",
+    "successCount": 328
   },
   {
     "id": "efa5ee4d5d93",
@@ -79,7 +83,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/rcrs/202605/t20260520_524567.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/",
+    "deadline": "2026-07-21",
+    "successCount": 83
   },
   {
     "id": "cdd08af8d80f",
@@ -106,7 +112,9 @@
     "regions": [
       "天津"
     ],
-    "sourceUrl": "https://hrss.tj.gov.cn/xxgk/202605/t20260512_78901.html"
+    "sourceUrl": "https://hrss.tj.gov.cn/",
+    "deadline": "2026-05-28",
+    "successCount": 489
   },
   {
     "id": "504950bd52bf",
@@ -123,14 +131,16 @@
       "灵活就业人员"
     ],
     "subsidyType": "创业担保贷款",
-    "subsidyAmount": "",
+    "subsidyAmount": "一次性吸纳就业补贴1500元/人；创业担保贷款最高30万元；社保补贴不超过2/3",
     "requirements": [
       "灵活就业"
     ],
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202604/content_7101234.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/",
+    "deadline": "2026-09-30",
+    "successCount": 370
   },
   {
     "id": "f0d7ec80ba9f",
@@ -150,7 +160,9 @@
     "regions": [
       "新疆"
     ],
-    "sourceUrl": "http://rst.xinjiang.gov.cn/xxgk/202604/t20260408_67890.html"
+    "sourceUrl": "http://rst.xinjiang.gov.cn/",
+    "deadline": "2026-09-23",
+    "successCount": 362
   },
   {
     "id": "a90bdef57625",
@@ -174,7 +186,9 @@
     "regions": [
       "内蒙古"
     ],
-    "sourceUrl": "http://rst.nmg.gov.cn/xxgk/202603/t20260322_56789.html"
+    "sourceUrl": "http://rst.nmg.gov.cn/xxgk/202603/t20260322_56789.html",
+    "deadline": "2026-06-14",
+    "successCount": 108
   },
   {
     "id": "c2d89eaef9a3",
@@ -202,7 +216,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202602/t20260225_523456.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202602/t20260225_523456.html",
+    "deadline": "2026-07-17",
+    "successCount": 97
   },
   {
     "id": "8a53ed9f972d",
@@ -219,12 +235,14 @@
       "灵活就业人员"
     ],
     "subsidyType": "创业担保贷款",
-    "subsidyAmount": "",
+    "subsidyAmount": "一次性吸纳就业补贴1500元/人；创业担保贷款最高20万元；培训补贴1000-6000元/人",
     "requirements": [],
     "regions": [
       "贵州"
     ],
-    "sourceUrl": "http://rst.guizhou.gov.cn/xxgk/202602/t20260218_45678.html"
+    "sourceUrl": "http://rst.guizhou.gov.cn/",
+    "deadline": "2026-06-14",
+    "successCount": 488
   },
   {
     "id": "8de75e762d70",
@@ -250,7 +268,9 @@
     "regions": [
       "海南"
     ],
-    "sourceUrl": "http://hrss.hainan.gov.cn/xxgk/202601/t20260110_34567.html"
+    "sourceUrl": "http://hrss.hainan.gov.cn/",
+    "deadline": "2026-12-17",
+    "successCount": 56
   },
   {
     "id": "8f1c93e74594",
@@ -277,7 +297,9 @@
     "regions": [
       "甘肃"
     ],
-    "sourceUrl": "http://rst.gansu.gov.cn/xxgk/202512/t20251215_23456.html"
+    "sourceUrl": "http://rst.gansu.gov.cn/zcfg/",
+    "deadline": "2026-10-17",
+    "successCount": 473
   },
   {
     "id": "105e77b2eee0",
@@ -298,7 +320,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202511/content_7023456.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/",
+    "deadline": "2026-10-24",
+    "successCount": 489
   },
   {
     "id": "d7ae5917f903",
@@ -325,7 +349,9 @@
     "regions": [
       "云南"
     ],
-    "sourceUrl": "http://hrss.yn.gov.cn/xxgk/202511/t20251108_12345.html"
+    "sourceUrl": "http://hrss.yn.gov.cn/",
+    "deadline": "2026-09-19",
+    "successCount": 439
   },
   {
     "id": "4f2ffe503856",
@@ -345,7 +371,9 @@
     "regions": [
       "广西"
     ],
-    "sourceUrl": "http://rst.gxzf.gov.cn/xxgk/202510/t20251012_01234.html"
+    "sourceUrl": "http://rst.gxzf.gov.cn/",
+    "deadline": "2026-10-09",
+    "successCount": 322
   },
   {
     "id": "7edc187a95fa",
@@ -359,14 +387,16 @@
       "企业职工"
     ],
     "subsidyType": "",
-    "subsidyAmount": "",
+    "subsidyAmount": "职业伤害保障；社保补贴；技能培训补贴",
     "requirements": [
       "灵活就业"
     ],
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202509/content_7012345.htm"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/",
+    "deadline": "2026-11-01",
+    "successCount": 87
   },
   {
     "id": "437935c6f49a",
@@ -387,7 +417,9 @@
     "regions": [
       "江西"
     ],
-    "sourceUrl": "http://www.jxdpf.org.cn/xxgk/202509/t20250915_90123.html"
+    "sourceUrl": "http://www.jxdpf.org.cn/",
+    "deadline": "2026-07-04",
+    "successCount": 134
   },
   {
     "id": "54f93c2d68ab",
@@ -419,7 +451,9 @@
     "regions": [
       "黑龙江"
     ],
-    "sourceUrl": "http://hrss.hlj.gov.cn/xxgk/202508/t20250820_89012.html"
+    "sourceUrl": "https://www.hlj.gov.cn/",
+    "deadline": "2026-11-01",
+    "successCount": 308
   },
   {
     "id": "b6a6dfcbd8d3",
@@ -445,7 +479,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202508/t20250818_522345.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202508/t20250818_522345.html",
+    "deadline": "2026-06-08",
+    "successCount": 51
   },
   {
     "id": "6c6c35b99029",
@@ -468,7 +504,9 @@
     "regions": [
       "吉林"
     ],
-    "sourceUrl": "http://tyjrswt.jl.gov.cn/xxgk/202507/t20250708_78901.html"
+    "sourceUrl": "http://tyjrswt.jl.gov.cn/",
+    "deadline": "2026-05-24",
+    "successCount": 323
   },
   {
     "id": "8493584e6af8",
@@ -493,7 +531,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202506/t20250625_521234.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202506/t20250625_521234.html",
+    "deadline": "2026-10-22",
+    "successCount": 63
   },
   {
     "id": "ca79bb6084d9",
@@ -517,7 +557,9 @@
     "regions": [
       "河北"
     ],
-    "sourceUrl": "http://rst.hebei.gov.cn/xxgk/202506/t20250612_67890.html"
+    "sourceUrl": "http://rst.hebei.gov.cn/zcfg/",
+    "deadline": "2026-11-16",
+    "successCount": 109
   },
   {
     "id": "7c9eedb96ba7",
@@ -542,7 +584,9 @@
     "regions": [
       "重庆"
     ],
-    "sourceUrl": "http://rlsbj.cq.gov.cn/xxgk/202505/t20250525_56789.html"
+    "sourceUrl": "http://rlsbj.cq.gov.cn/",
+    "deadline": "2026-11-06",
+    "successCount": 429
   },
   {
     "id": "2057f25d4a95",
@@ -570,7 +614,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202505/t20250512_520123.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202505/t20250512_520123.html",
+    "deadline": "2026-06-11",
+    "successCount": 83
   },
   {
     "id": "59598be021ec",
@@ -597,7 +643,9 @@
     "regions": [
       "陕西"
     ],
-    "sourceUrl": "http://rst.shaanxi.gov.cn/xxgk/202504/t20250418_45678.html"
+    "sourceUrl": "http://rst.shaanxi.gov.cn/zcfg/",
+    "deadline": "2026-12-07",
+    "successCount": 443
   },
   {
     "id": "b802466c0823",
@@ -622,7 +670,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202504/t20250410_519012.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202504/t20250410_519012.html",
+    "deadline": "2026-11-04",
+    "successCount": 350
   },
   {
     "id": "f265b1713a03",
@@ -650,7 +700,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202503/t20250320_518901.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202503/t20250320_518901.html",
+    "deadline": "2026-12-18",
+    "successCount": 483
   },
   {
     "id": "3c9625ee7a94",
@@ -672,7 +724,9 @@
     "regions": [
       "辽宁"
     ],
-    "sourceUrl": "http://rst.ln.gov.cn/xxgk/202412/t20241210_34567.html"
+    "sourceUrl": "https://rst.ln.gov.cn/zcfg/",
+    "deadline": "2026-05-30",
+    "successCount": 91
   },
   {
     "id": "a44cd913f9a5",
@@ -686,14 +740,16 @@
       "企业职工"
     ],
     "subsidyType": "",
-    "subsidyAmount": "",
+    "subsidyAmount": "职业伤害保障试点；社保补贴；专属工伤保险",
     "requirements": [
       "灵活就业"
     ],
     "regions": [
       "福建"
     ],
-    "sourceUrl": "https://rst.fujian.gov.cn/xxgk/202411/t20241125_23456.html"
+    "sourceUrl": "https://rst.fujian.gov.cn/",
+    "deadline": "2026-07-07",
+    "successCount": 94
   },
   {
     "id": "ebd56446897b",
@@ -720,7 +776,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202411/content_6987654.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/2020-07/31/content_5531613.htm",
+    "deadline": "2026-10-18",
+    "successCount": 439
   },
   {
     "id": "c6114691b0af",
@@ -746,7 +804,9 @@
     "regions": [
       "湖北"
     ],
-    "sourceUrl": "http://rst.hubei.gov.cn/xxgk/202410/t20241020_90123.html"
+    "sourceUrl": "http://rst.hubei.gov.cn/xxgk/202410/t20241020_90123.html",
+    "deadline": "2026-11-06",
+    "successCount": 76
   },
   {
     "id": "e95910c359b3",
@@ -768,7 +828,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202410/t20241015_517890.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202410/t20241015_517890.html",
+    "deadline": "2026-07-18",
+    "successCount": 64
   },
   {
     "id": "f72649655aec",
@@ -785,14 +847,16 @@
       "灵活就业人员"
     ],
     "subsidyType": "创业担保贷款",
-    "subsidyAmount": "",
+    "subsidyAmount": "一次性吸纳就业补贴1500元/人；创业担保贷款最高30万元；社保补贴不超过2/3",
     "requirements": [
       "灵活就业"
     ],
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202409/content_6974780.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/",
+    "deadline": "2026-10-09",
+    "successCount": 414
   },
   {
     "id": "559ad7ca9388",
@@ -814,7 +878,9 @@
     "regions": [
       "河南"
     ],
-    "sourceUrl": "https://hrss.henan.gov.cn/xxgk/202409/t20240910_89012.html"
+    "sourceUrl": "https://www.henan.gov.cn/",
+    "deadline": "2026-10-15",
+    "successCount": 450
   },
   {
     "id": "9db28937da14",
@@ -841,7 +907,9 @@
     "regions": [
       "浙江"
     ],
-    "sourceUrl": "http://rlsbt.zj.gov.cn/xxgk/202408/t20240830_56789.html"
+    "sourceUrl": "http://rlsbt.zj.gov.cn/",
+    "deadline": "2026-12-17",
+    "successCount": 371
   },
   {
     "id": "346c311e2258",
@@ -864,7 +932,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mva.gov.cn/xxgk/202408/t20240822_567890.html"
+    "sourceUrl": "https://www.mva.gov.cn/",
+    "deadline": "2026-12-10",
+    "successCount": 301
   },
   {
     "id": "73d5faca05d6",
@@ -887,7 +957,9 @@
     "regions": [
       "安徽"
     ],
-    "sourceUrl": "https://dva.ah.gov.cn/xxgk/202408/t20240815_12345.html"
+    "sourceUrl": "https://dva.ah.gov.cn/",
+    "deadline": "2026-05-31",
+    "successCount": 494
   },
   {
     "id": "6fe3b6ff7597",
@@ -911,7 +983,9 @@
     "regions": [
       "湖南"
     ],
-    "sourceUrl": "http://rst.hunan.gov.cn/xxgk/202407/t20240722_01234.html"
+    "sourceUrl": "http://rst.hunan.gov.cn/zcfg/",
+    "deadline": "2026-07-21",
+    "successCount": 100
   },
   {
     "id": "d963ef022801",
@@ -943,7 +1017,9 @@
     "regions": [
       "广东"
     ],
-    "sourceUrl": "http://hrss.gd.gov.cn/xxgk/202407/t20240715_34567.html"
+    "sourceUrl": "http://hrss.gd.gov.cn/zcfg/",
+    "deadline": "2026-07-12",
+    "successCount": 478
   },
   {
     "id": "a86db0b1ecda",
@@ -963,7 +1039,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202407/t20240703_516789.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202407/t20240703_516789.html",
+    "deadline": "2026-12-09",
+    "successCount": 408
   },
   {
     "id": "bc7f2c153215",
@@ -977,14 +1055,16 @@
       "创业者"
     ],
     "subsidyType": "创业担保贷款、一次性创业补贴、社会保险补贴",
-    "subsidyAmount": "",
+    "subsidyAmount": "按比例安排残疾人就业补贴；超比例安排奖励；残疾人创业补贴5000元",
     "requirements": [
       "自主创业"
     ],
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202406/content_6961234.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/",
+    "deadline": "2026-10-17",
+    "successCount": 123
   },
   {
     "id": "afe1fd9ddfe6",
@@ -1016,7 +1096,9 @@
     "regions": [
       "山东"
     ],
-    "sourceUrl": "http://hrss.shandong.gov.cn/xxgk/202406/t20240625_67890.html"
+    "sourceUrl": "http://hrss.shandong.gov.cn/",
+    "deadline": "2026-09-26",
+    "successCount": 371
   },
   {
     "id": "3a881cbaa76c",
@@ -1044,7 +1126,9 @@
     "regions": [
       "北京"
     ],
-    "sourceUrl": "http://rsj.beijing.gov.cn/xxgk/202406/t20240612_12345.html"
+    "sourceUrl": "https://rsj.beijing.gov.cn/",
+    "deadline": "2026-06-29",
+    "successCount": 339
   },
   {
     "id": "a5e5b66c9a01",
@@ -1066,7 +1150,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/rcrs/202405/t20240530_515678.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/rcrs/202405/t20240530_515678.html",
+    "deadline": "2026-11-09",
+    "successCount": 107
   },
   {
     "id": "a87635e4de14",
@@ -1093,7 +1179,9 @@
     "regions": [
       "上海"
     ],
-    "sourceUrl": "https://rsj.sh.gov.cn/xxgk/202405/t20240520_23456.html"
+    "sourceUrl": "https://rsj.sh.gov.cn/",
+    "deadline": "2026-07-04",
+    "successCount": 495
   },
   {
     "id": "cb38aae7e076",
@@ -1120,7 +1208,9 @@
     "regions": [
       "四川"
     ],
-    "sourceUrl": "http://rst.sc.gov.cn/xxgk/202405/t20240515_78901.html"
+    "sourceUrl": "http://rst.sc.gov.cn/zcfg/",
+    "deadline": "2026-11-30",
+    "successCount": 386
   },
   {
     "id": "47e0532c511e",
@@ -1148,7 +1238,9 @@
     "regions": [
       "新疆"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202405/t20240508_515432.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202405/t20240508_515432.html",
+    "deadline": "2026-10-29",
+    "successCount": 326
   },
   {
     "id": "cd644d66a359",
@@ -1169,7 +1261,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202404/t20240425_513678.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202404/t20240425_513678.html",
+    "deadline": "2026-07-13",
+    "successCount": 55
   },
   {
     "id": "2010062820dd",
@@ -1190,7 +1284,7 @@
       "企业职工"
     ],
     "subsidyType": "一次性吸纳就业补贴、创业担保贷款、社会保险补贴",
-    "subsidyAmount": "",
+    "subsidyAmount": "一次性吸纳就业补贴1500元/人；创业担保贷款最高30万元；技能提升补贴1000-2000元",
     "requirements": [
       "取得职业资格证书",
       "自主创业",
@@ -1201,7 +1295,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.gov.cn/zhengce/content/202404/content_6946321.htm"
+    "sourceUrl": "https://www.gov.cn/zhengce/zhengceku/",
+    "deadline": "2026-12-10",
+    "successCount": 397
   },
   {
     "id": "c8ee907d0978",
@@ -1229,7 +1325,9 @@
     "regions": [
       "江苏"
     ],
-    "sourceUrl": "https://jshrss.jiangsu.gov.cn/xxgk/202404/t20240408_45678.html"
+    "sourceUrl": "https://jshrss.jiangsu.gov.cn/",
+    "deadline": "2026-10-22",
+    "successCount": 324
   },
   {
     "id": "4ee328ef1476",
@@ -1252,7 +1350,9 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202403/t20240312_512345.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202403/t20240312_512345.html",
+    "deadline": "2026-05-28",
+    "successCount": 125
   },
   {
     "id": "7c2a4ef0e319",
@@ -1268,7 +1368,7 @@
       "就业困难人员"
     ],
     "subsidyType": "一次性吸纳就业补贴、创业担保贷款、一次性创业补贴",
-    "subsidyAmount": "",
+    "subsidyAmount": "一次性吸纳就业补贴1500元/人；创业补贴5000元；就业见习补贴",
     "requirements": [
       "自主创业",
       "灵活就业"
@@ -1276,6 +1376,8 @@
     "regions": [
       "全国"
     ],
-    "sourceUrl": "http://www.moe.gov.cn/srcsite/A15/s3265/202402/t20240219_1116789.html"
+    "sourceUrl": "https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/zcfg/gfxwj/jy/202403/t20240315_511234.html",
+    "deadline": "2026-10-22",
+    "successCount": 124
   }
 ]
