@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import ProfileForm from "@/components/ProfileForm";
 import { useAppStore } from "@/lib/store";
 import { loadPolicies } from "@/lib/data";
@@ -63,9 +65,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+      {/* 顶部：返回介绍页 */}
+      <div className="max-w-2xl mx-auto px-4 pt-4">
+        <Link
+          href="/landing"
+          className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-emerald-600 transition-colors"
+        >
+          <ArrowLeft size={14} />
+          介绍页
+        </Link>
+      </div>
+
       {/* Hero */}
-      <div className="pt-12 pb-8 text-center">
+      <div className="pt-8 pb-8 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-100 rounded-full mb-4">
+          <Sparkles size={14} className="text-emerald-600" />
           <span className="text-xs font-medium text-emerald-700">
             社会服务 · 社会公益
           </span>

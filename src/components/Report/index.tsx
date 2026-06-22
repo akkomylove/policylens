@@ -1,6 +1,39 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  BarChart3,
+  Wallet,
+  Target,
+  CheckCircle,
+  FileText,
+  Flame,
+  Clock,
+  Users,
+  TrendingUp,
+  MapPin,
+  Landmark,
+  BookOpen,
+  ShieldCheck,
+  ClipboardList,
+  Send,
+  Search,
+  PartyPopper,
+  Star,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Share2,
+  Download,
+  Heart,
+  GitCompare,
+  ArrowUp,
+  AlertTriangle,
+  GraduationCap,
+  Info,
+  Phone,
+} from "lucide-react";
 import {
   MatchedPolicy,
   UserProfile,
@@ -19,6 +52,7 @@ import {
 import { useAppStore, ApplicationStatus, ApplicationProgress, ApplicationStep } from "@/lib/store";
 import { generateShareLink } from "@/lib/share";
 import { getEffectiveStatusInfo, getCountdownInfo, getEligibilityWindow } from "@/lib/effectiveStatus";
+import { useCountUp, formatNumber } from "@/lib/useCountUp";
 import CompareModal from "./CompareModal";
 import ApplicationRoadmap from "./ApplicationRoadmap";
 
@@ -96,13 +130,16 @@ function useToast() {
 }
 
 // ============ 补贴类型图标映射 ============
-function getSubsidyIcon(subsidyType: string): string {
-  if (/贷款|授信|信贷|创业担保/.test(subsidyType)) return "🏦";
-  if (/培训|学习|技能|实训/.test(subsidyType)) return "📚";
-  if (/社保|保险|参保|缴费/.test(subsidyType)) return "🛡️";
-  if (/税收|减税|免税|退税|税费/.test(subsidyType)) return "📋";
-  if (/补贴|奖励|津贴|补助|资金/.test(subsidyType)) return "💰";
-  return "📄";
+type LucideIcon = React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
+
+// V6：补贴图标组件（直接条件渲染，避免在 render 中创建组件）
+function SubsidyIcon({ subsidyType, size = 16, className }: { subsidyType: string; size?: number; className?: string }) {
+  if (/贷款|授信|信贷|创业担保/.test(subsidyType)) return <Landmark size={size} className={className} />;
+  if (/培训|学习|技能|实训/.test(subsidyType)) return <BookOpen size={size} className={className} />;
+  if (/社保|保险|参保|缴费/.test(subsidyType)) return <ShieldCheck size={size} className={className} />;
+  if (/税收|减税|免税|退税|税费/.test(subsidyType)) return <ClipboardList size={size} className={className} />;
+  if (/补贴|奖励|津贴|补助|资金/.test(subsidyType)) return <Wallet size={size} className={className} />;
+  return <FileText size={size} className={className} />;
 }
 
 // ============ 申请状态信息映射 ============
@@ -110,24 +147,24 @@ function getApplicationStatusInfo(status: ApplicationStatus): {
   label: string;
   color: string;
   bgColor: string;
-  icon: string;
+  icon: LucideIcon;
 } {
   switch (status) {
     case "todo":
-      return { label: "待申请", color: "#6b7280", bgColor: "#f3f4f6", icon: "○" };
+      return { label: "待申请", color: "#6b7280", bgColor: "#f3f4f6", icon: Clock };
     case "applying":
-      return { label: "申请中", color: "#f59e0b", bgColor: "#fef3c7", icon: "◐" };
+      return { label: "申请中", color: "#f59e0b", bgColor: "#fef3c7", icon: Clock };
     case "done":
-      return { label: "已通过", color: "#10b981", bgColor: "#d1fae5", icon: "✓" };
+      return { label: "已通过", color: "#10b981", bgColor: "#d1fae5", icon: CheckCircle };
   }
 }
 
 // ============ V5：4 步申请进度条 ============
-const APPLICATION_STEPS: { key: ApplicationStep; label: string; icon: string }[] = [
-  { key: "materials", label: "材料", icon: "📋" },
-  { key: "submitted", label: "提交", icon: "📨" },
-  { key: "reviewed", label: "审核", icon: "🔍" },
-  { key: "received", label: "领取", icon: "🎉" },
+const APPLICATION_STEPS: { key: ApplicationStep; label: string; icon: LucideIcon }[] = [
+  { key: "materials", label: "材料", icon: ClipboardList },
+  { key: "submitted", label: "提交", icon: Send },
+  { key: "reviewed", label: "审核", icon: Search },
+  { key: "received", label: "领取", icon: PartyPopper },
 ];
 
 function ApplicationProgressBar({
@@ -167,7 +204,7 @@ function ApplicationProgressBar({
         <span className="text-xs text-gray-500">
           申请进度
           {isStarted && (
-            <span className="ml-1.5 text-[10px] text-gray-400">
+            <span className="ml-1.5 text-2xs text-gray-400">
               ({completedCount}/4)
             </span>
           )}
@@ -175,7 +212,7 @@ function ApplicationProgressBar({
         {isStarted && (
           <button
             onClick={onReset}
-            className="text-[10px] text-gray-400 hover:text-red-500 transition-colors"
+            className="text-2xs text-gray-400 hover:text-red-500 transition-colors"
             title="重置进度"
           >
             重置
@@ -195,7 +232,7 @@ function ApplicationProgressBar({
                 onClick={() => isClickable && onToggleStep(step.key)}
                 disabled={!isClickable}
                 className={`
-                  flex flex-col items-center gap-0.5 flex-1 py-1.5 px-1 rounded-lg text-[10px] font-medium transition-all
+                  flex flex-col items-center gap-0.5 flex-1 py-1.5 px-1 rounded-lg text-2xs font-medium transition-all
                   ${done
                     ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                     : isClickable
@@ -205,8 +242,8 @@ function ApplicationProgressBar({
                 `}
                 title={done ? `已完成：${step.label}（点击取消）` : isClickable ? `标记完成：${step.label}` : "需先完成前一步"}
               >
-                <span className={`text-sm ${done ? "" : "opacity-50"}`}>
-                  {done ? "✓" : step.icon}
+                <span className={`text-sm ${done ? "" : "opacity-50"} flex items-center justify-center`}>
+                  {done ? <CheckCircle size={14} /> : <step.icon size={14} />}
                 </span>
                 <span>{step.label}</span>
               </button>
@@ -229,13 +266,13 @@ function ApplicationProgressBar({
 
       {/* 完成提示 */}
       {isAllDone && (
-        <div className="mt-2 text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1 flex items-center gap-1">
-          <span>🎉</span>
+        <div className="mt-2 text-2xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1 flex items-center gap-1">
+          <PartyPopper size={12} />
           <span>补贴已领取，恭喜完成申请流程！</span>
         </div>
       )}
       {!isStarted && (
-        <div className="mt-2 text-[10px] text-gray-400">
+        <div className="mt-2 text-2xs text-gray-400">
           点击「材料」开始跟踪你的申请进度，进度会自动保存到本地。
         </div>
       )}
@@ -248,16 +285,16 @@ function getPriorityInfo(priority?: string): {
   label: string;
   color: string;
   bgColor: string;
-  icon: string;
+  icon: LucideIcon;
 } | null {
   if (!priority) return null;
   switch (priority) {
     case "strong":
-      return { label: "强烈推荐", color: "#10b981", bgColor: "#d1fae5", icon: "🔥" };
+      return { label: "强烈推荐", color: "#10b981", bgColor: "#d1fae5", icon: Flame };
     case "normal":
-      return { label: "推荐", color: "#f59e0b", bgColor: "#fef3c7", icon: "✓" };
+      return { label: "推荐", color: "#f59e0b", bgColor: "#fef3c7", icon: CheckCircle };
     case "optional":
-      return { label: "可选", color: "#9ca3af", bgColor: "#f3f4f6", icon: "○" };
+      return { label: "可选", color: "#9ca3af", bgColor: "#f3f4f6", icon: Info };
     default:
       return null;
   }
@@ -280,32 +317,63 @@ type SortBy = "matchDesc" | "amountDesc" | "dateDesc" | "difficultyAsc";
 
 // ============ KPI 卡片 ============
 function KpiCard({
-  icon,
+  icon: Icon,
   value,
   label,
   color,
+  isNumeric = false,
 }: {
-  icon: string;
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
   value: string | number;
   label: string;
   color: string;
+  isNumeric?: boolean;
 }) {
+  // V6：数字 count-up 动画
+  const numericValue = typeof value === "number" ? value : 0;
+  const animatedValue = useCountUp(numericValue, 1000);
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover"
+    >
       <div className="h-1" style={{ backgroundColor: color }} />
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs text-gray-500">{label}</span>
-          <span className="text-lg">{icon}</span>
+          <Icon size={18} className="opacity-70" style={{ color }} />
         </div>
         <div
           className="text-2xl font-bold"
           style={{ color }}
         >
-          {value}
+          {isNumeric && typeof value === "number"
+            ? formatNumber(animatedValue)
+            : value}
         </div>
       </div>
-    </div>
+    </motion.div>
+  );
+}
+
+// ============ V6：补贴总额 count-up 展示 ============
+function SubsidyDisplay({ estimate }: { estimate: string }) {
+  // 提取数字部分（如"约 35000 元" → 35000）
+  const match = estimate.match(/[\d,]+/);
+  const numericValue = match ? parseInt(match[0].replace(/,/g, ""), 10) : 0;
+  const animatedValue = useCountUp(numericValue, 1500);
+
+  // 提取前后缀
+  const prefix = estimate.slice(0, match?.index ?? 0);
+  const suffix = estimate.slice((match?.index ?? 0) + (match?.[0].length ?? 0));
+
+  return (
+    <span className="text-3xl font-bold">
+      {prefix}{formatNumber(animatedValue)}{suffix}
+    </span>
   );
 }
 
@@ -355,9 +423,7 @@ function FilterToolbar({
       {/* 搜索框 + 收藏筛选 + 时效筛选 */}
       <div className="flex gap-2 flex-wrap">
         <div className="flex-1 relative min-w-[200px]">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-            🔍
-          </span>
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
@@ -368,23 +434,25 @@ function FilterToolbar({
         </div>
         <button
           onClick={() => setShowOnlyFavorited(!showOnlyFavorited)}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+          className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap inline-flex items-center gap-1 ${
             showOnlyFavorited
               ? "bg-amber-100 text-amber-700 border border-amber-300"
               : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300"
           }`}
         >
-          ⭐ 收藏 {favoriteCount > 0 && `(${favoriteCount})`}
+          <Star size={12} className={showOnlyFavorited ? "fill-amber-500 text-amber-500" : ""} />
+          收藏 {favoriteCount > 0 && `(${favoriteCount})`}
         </button>
         <button
           onClick={() => setShowOnlyActive(!showOnlyActive)}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+          className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap inline-flex items-center gap-1 ${
             showOnlyActive
               ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
               : "bg-white text-gray-600 border border-gray-200 hover:border-emerald-300"
           }`}
         >
-          ✓ 仅看可申报
+          <CheckCircle size={12} />
+          仅看可申报
         </button>
       </div>
 
@@ -458,7 +526,7 @@ function MapViewer({ location }: { location: string }) {
     <div className="mt-1">
       <button
         onClick={() => setShowMap(!showMap)}
-        className="text-[10px] text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1"
+        className="text-2xs text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1"
       >
         <span>{showMap ? "▼" : "▸"}</span>
         {showMap ? "收起地图" : "查看地图"}
@@ -473,7 +541,7 @@ function MapViewer({ location }: { location: string }) {
             title="办理地点地图"
             loading="lazy"
           />
-          <div className="text-[10px] text-gray-400 p-1.5 bg-gray-50">
+          <div className="text-2xs text-gray-400 p-1.5 bg-gray-50">
             地图由高德地图提供，仅供参考，具体以实际办理地点为准
           </div>
         </div>
@@ -509,18 +577,18 @@ function ConditionGapDisplay({
   let bgColor = "bg-emerald-50";
   let borderColor = "border-emerald-200";
   let textColor = "text-emerald-800";
-  let icon = "✓";
+  let Icon: LucideIcon = CheckCircle;
 
   if (failedRequired.length > 0) {
     bgColor = "bg-red-50";
     borderColor = "border-red-200";
     textColor = "text-red-800";
-    icon = "✗";
+    Icon = AlertTriangle;
   } else if (failedOptional.length > 0) {
     bgColor = "bg-amber-50";
     borderColor = "border-amber-200";
     textColor = "text-amber-800";
-    icon = "⚠";
+    Icon = AlertTriangle;
   }
 
   // 满足比例进度条
@@ -535,10 +603,10 @@ function ConditionGapDisplay({
     >
       {/* 头部：状态图标 + gapText */}
       <div className="flex items-start gap-2 mb-2">
-        <span className={`${textColor} font-bold text-sm`}>{icon}</span>
+        <Icon size={14} className={`${textColor} flex-shrink-0 mt-0.5`} />
         <div className="flex-1">
           <div className={`text-xs font-medium ${textColor}`}>{gapText}</div>
-          <div className="text-[10px] text-gray-500 mt-0.5">
+          <div className="text-2xs text-gray-500 mt-0.5">
             满足 {satisfiedCount}/{totalConditions} 个条件
             {totalRequired > 0 &&
               `（核心 ${requiredSatisfiedCount}/${totalRequired}）`}
@@ -550,7 +618,7 @@ function ConditionGapDisplay({
       <div className="space-y-1">
         {totalRequired > 0 && (
           <div>
-            <div className="flex justify-between text-[10px] text-gray-500 mb-0.5">
+            <div className="flex justify-between text-2xs text-gray-500 mb-0.5">
               <span>核心条件</span>
               <span>{requiredSatisfiedCount}/{totalRequired}</span>
             </div>
@@ -565,7 +633,7 @@ function ConditionGapDisplay({
           </div>
         )}
         <div>
-          <div className="flex justify-between text-[10px] text-gray-500 mb-0.5">
+          <div className="flex justify-between text-2xs text-gray-500 mb-0.5">
             <span>全部条件</span>
             <span>{satisfiedCount}/{totalConditions}</span>
           </div>
@@ -581,13 +649,13 @@ function ConditionGapDisplay({
       {/* 未满足条件列表（展开式） */}
       {(failedRequired.length > 0 || failedOptional.length > 0) && (
         <details className="mt-2">
-          <summary className={`text-[10px] ${textColor} cursor-pointer hover:underline`}>
+          <summary className={`text-2xs ${textColor} cursor-pointer hover:underline`}>
             查看未满足条件（{failedRequired.length + failedOptional.length} 项）
           </summary>
-          <ul className="mt-1 space-y-0.5 text-[10px] text-gray-600">
+          <ul className="mt-1 space-y-0.5 text-2xs text-gray-600">
             {failedRequired.map((r) => (
               <li key={r.condition.id} className="flex items-start gap-1">
-                <span className="text-red-500 flex-shrink-0">✗</span>
+                <span className="text-red-500 flex-shrink-0 mt-0.5"><AlertTriangle size={10} /></span>
                 <span>
                   <span className="font-medium">{r.condition.label}</span>
                   {r.actualValue !== undefined && (
@@ -599,7 +667,7 @@ function ConditionGapDisplay({
             ))}
             {failedOptional.map((r) => (
               <li key={r.condition.id} className="flex items-start gap-1">
-                <span className="text-amber-500 flex-shrink-0">⚠</span>
+                <span className="text-amber-500 flex-shrink-0 mt-0.5"><AlertTriangle size={10} /></span>
                 <span>
                   <span className="font-medium">{r.condition.label}</span>
                   {r.actualValue !== undefined && (
@@ -655,7 +723,6 @@ function PolicyCard({
   const difficultyInfo = policy.difficulty
     ? getDifficultyInfo(policy.difficulty)
     : null;
-  const subsidyIcon = getSubsidyIcon(policy.subsidyType);
   const effectiveInfo = policy.effectiveStatus
     ? getEffectiveStatusInfo(policy.effectiveStatus)
     : null;
@@ -677,6 +744,9 @@ function PolicyCard({
 
   // V4 新增：标签折叠状态（默认只显示核心 4 个标签）
   const [showMoreTags, setShowMoreTags] = useState(false);
+
+  // V6 新增：详情折叠状态（渐进式披露，默认折叠次要信息）
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // 次要标签（折叠区）：难度 + 时效 + 序号
   const secondaryTags = [
@@ -711,7 +781,12 @@ function PolicyCard({
   }, [interpretation]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3), ease: "easeOut" }}
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover"
+    >
       <div className="p-5">
         {/* 头部：序号 + 标签 + 收藏 */}
         <div className="flex items-start justify-between mb-3">
@@ -726,7 +801,7 @@ function PolicyCard({
                     color: priorityInfo.color,
                   }}
                 >
-                  <span>{priorityInfo.icon}</span>
+                  <priorityInfo.icon size={11} />
                   {priorityInfo.label}
                 </span>
               )}
@@ -747,7 +822,7 @@ function PolicyCard({
                   }}
                   title={`申报截止：${policy.deadline}`}
                 >
-                  <span>⏰</span>
+                  <Clock size={11} />
                   {countdownInfo.label}
                 </span>
               )}
@@ -761,7 +836,7 @@ function PolicyCard({
                   }}
                   title={eligibilityWindow.detail}
                 >
-                  <span>🎓</span>
+                  <GraduationCap size={11} />
                   {eligibilityWindow.label}
                 </span>
               )}
@@ -774,7 +849,7 @@ function PolicyCard({
                     color: appStatusInfo.color,
                   }}
                 >
-                  <span>{appStatusInfo.icon}</span>
+                  <appStatusInfo.icon size={11} />
                   {appStatusInfo.label}
                 </span>
               )}
@@ -791,7 +866,7 @@ function PolicyCard({
                         color: difficultyInfo.color,
                       }}
                     >
-                      <span>{difficultyInfo.icon}</span>
+                      {policy.difficulty === "easy" ? <CheckCircle size={11} /> : policy.difficulty === "medium" ? <TrendingUp size={11} /> : <AlertTriangle size={11} />}
                       {difficultyInfo.label}
                     </span>
                   )}
@@ -803,7 +878,7 @@ function PolicyCard({
                         color: effectiveInfo.color,
                       }}
                     >
-                      <span>{effectiveInfo.icon}</span>
+                      {policy.effectiveStatus === "active" ? <CheckCircle size={11} /> : policy.effectiveStatus === "expiring" ? <Clock size={11} /> : <AlertTriangle size={11} />}
                       {effectiveInfo.label}
                     </span>
                   )}
@@ -834,14 +909,15 @@ function PolicyCard({
               className="p-2 rounded-lg hover:bg-gray-50 transition-colors"
               aria-label={isFavorited ? "取消收藏" : "收藏"}
             >
-              <span className={`text-xl ${isFavorited ? "" : "grayscale opacity-40"}`}>
-                {isFavorited ? "⭐" : "☆"}
-              </span>
+              <Star
+                size={20}
+                className={isFavorited ? "fill-amber-400 text-amber-400" : "text-gray-300"}
+              />
             </button>
             <button
               onClick={onToggleCompare}
               disabled={compareDisabled && !isInCompare}
-              className={`p-2 rounded-lg transition-colors text-xs ${
+              className={`p-2 rounded-lg transition-colors ${
                 isInCompare
                   ? "bg-indigo-100 text-indigo-700"
                   : "hover:bg-gray-50 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed"
@@ -849,79 +925,106 @@ function PolicyCard({
               aria-label={isInCompare ? "移出对比" : "加入对比"}
               title={compareDisabled && !isInCompare ? "对比已满 3 条" : ""}
             >
-              {isInCompare ? "📊" : "📈"}
+              {isInCompare ? <GitCompare size={16} /> : <TrendingUp size={16} />}
             </button>
           </div>
         </div>
 
-        {/* 匹配维度可视化（5 维度命中情况） */}
-        {policy.matchBreakdown ? (
-          <div className="grid grid-cols-5 gap-1 mb-3">
-            {Object.entries(policy.matchBreakdown).map(([dim, item]) => (
-              <div
-                key={dim}
-                className={`text-xs px-1.5 py-1 rounded text-center ${
-                  item.hit
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-gray-50 text-gray-400"
-                }`}
-                title={item.reason}
-              >
-                {DIM_LABELS[dim] || dim} {item.hit ? "✓" : "✕"}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {policy.matchReasons.map((reason, i) => (
-              <span
-                key={i}
-                className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs"
-              >
-                {reason}
-              </span>
-            ))}
-          </div>
+        {/* V6 新增：匹配详情折叠区（渐进式披露） */}
+        {(policy.matchBreakdown || policy.matchReasons.length > 0 || policy.conditionEvaluation || (policy.successCount && policy.successCount > 0)) && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="mb-3 text-xs text-gray-500 hover:text-emerald-600 transition-colors inline-flex items-center gap-1 print:hidden"
+            aria-expanded={isExpanded}
+          >
+            {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            {isExpanded ? "收起匹配详情" : "查看匹配详情"}
+          </button>
         )}
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              {/* 匹配维度可视化（5 维度命中情况） */}
+              {policy.matchBreakdown ? (
+                <div className="grid grid-cols-5 gap-1 mb-3">
+                  {Object.entries(policy.matchBreakdown).map(([dim, item]) => (
+                    <div
+                      key={dim}
+                      className={`text-xs px-1.5 py-1 rounded text-center flex items-center justify-center gap-0.5 ${
+                        item.hit
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-gray-50 text-gray-400"
+                      }`}
+                      title={item.reason}
+                    >
+                      {DIM_LABELS[dim] || dim}
+                      {item.hit ? <CheckCircle size={10} /> : <span className="text-2xs">✕</span>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {policy.matchReasons.map((reason, i) => (
+                    <span
+                      key={i}
+                      className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs"
+                    >
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              )}
 
-        {/* V5 新增：差几条提示（原子条件评估结果） */}
-        {policy.conditionEvaluation && (
-          <ConditionGapDisplay evaluation={policy.conditionEvaluation} />
-        )}
+              {/* V5 新增：差几条提示（原子条件评估结果） */}
+              {policy.conditionEvaluation && (
+                <ConditionGapDisplay evaluation={policy.conditionEvaluation} />
+              )}
+
+              {/* V3 新增：同类用户反馈（社会证明） */}
+              {policy.successCount && policy.successCount > 0 && (
+                <div className="flex items-center gap-2 mb-3 text-xs">
+                  <span className="text-gray-500 inline-flex items-center gap-1">
+                    <Users size={12} />
+                    同类用户已申请
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex -space-x-1">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="w-5 h-5 rounded-full bg-emerald-100 border border-white flex items-center justify-center text-2xs text-emerald-600 font-medium"
+                        >
+                          {i}
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-emerald-600 font-medium">
+                      {policy.successCount} 人
+                    </span>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* 补贴信息（升级版） */}
         {policy.subsidyAmount && (
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 mb-3 border border-amber-100">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{subsidyIcon}</span>
+              <SubsidyIcon subsidyType={policy.subsidyType} size={16} className="text-amber-600" />
               <span className="text-xs text-amber-700 font-medium">
                 {policy.subsidyType}
               </span>
             </div>
             <div className="text-lg font-bold text-amber-900">
               {policy.subsidyAmount}
-            </div>
-          </div>
-        )}
-
-        {/* V3 新增：同类用户反馈（社会证明） */}
-        {policy.successCount && policy.successCount > 0 && (
-          <div className="flex items-center gap-2 mb-3 text-xs">
-            <span className="text-gray-500">👥 同类用户已申请</span>
-            <div className="flex items-center gap-1.5">
-              <div className="flex -space-x-1">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="w-5 h-5 rounded-full bg-emerald-100 border border-white flex items-center justify-center text-[10px] text-emerald-600 font-medium"
-                  >
-                    {i}
-                  </div>
-                ))}
-              </div>
-              <span className="text-emerald-600 font-medium">
-                {policy.successCount} 人
-              </span>
             </div>
           </div>
         )}
@@ -965,7 +1068,8 @@ function PolicyCard({
             {interpretation.requiredDocuments && interpretation.requiredDocuments.length > 0 && (
               <div className="pt-2 border-t border-gray-200">
                 <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                  <span>📋</span> 申请材料：
+                  <ClipboardList size={12} />
+                  申请材料：
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {interpretation.requiredDocuments.map((doc, i) => (
@@ -985,7 +1089,10 @@ function PolicyCard({
               <div className="pt-2 border-t border-gray-200 space-y-1.5">
                 {interpretation.applyLocation && (
                   <div className="flex gap-2 items-start">
-                    <span className="text-xs text-gray-500 flex-shrink-0 mt-0.5">📍 办理地点：</span>
+                    <span className="text-xs text-gray-500 flex-shrink-0 mt-0.5 inline-flex items-center gap-1">
+                      <MapPin size={12} />
+                      办理地点：
+                    </span>
                     <div className="flex-1">
                       <span className="text-xs text-gray-700 leading-relaxed">{interpretation.applyLocation}</span>
                       {/* V5 新增：查看地图按钮 */}
@@ -995,7 +1102,10 @@ function PolicyCard({
                 )}
                 {interpretation.contactPhone && (
                   <div className="flex gap-2 items-start">
-                    <span className="text-xs text-gray-500 flex-shrink-0 mt-0.5">📞 咨询电话：</span>
+                    <span className="text-xs text-gray-500 flex-shrink-0 mt-0.5 inline-flex items-center gap-1">
+                      <Phone size={12} />
+                      咨询电话：
+                    </span>
                     <span className="text-xs text-gray-700 leading-relaxed">{interpretation.contactPhone}</span>
                   </div>
                 )}
@@ -1030,9 +1140,9 @@ function PolicyCard({
                   rel="noopener noreferrer"
                   className="block w-full text-center py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors shadow-sm"
                 >
-                  立即申报 →
+                  立即申报
                 </a>
-                <div className="text-[10px] text-gray-400 text-center mt-1">
+                <div className="text-2xs text-gray-400 text-center mt-1">
                   点击跳转至官方申报入口
                 </div>
               </div>
@@ -1041,8 +1151,9 @@ function PolicyCard({
             {/* V5 新增：防骗警示（仅有 applyUrl 时显示） */}
             {policy.applyUrl && (
               <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="text-[10px] text-amber-800 leading-relaxed">
-                  ⚠️ 防骗警示：本政策唯一官方申报入口为上方按钮。任何收费代办、承诺包过均为骗局，请勿上当。
+                <div className="text-2xs text-amber-800 leading-relaxed flex items-start gap-1">
+                  <AlertTriangle size={11} className="flex-shrink-0 mt-0.5" />
+                  <span>防骗警示：本政策唯一官方申报入口为上方按钮。任何收费代办、承诺包过均为骗局，请勿上当。</span>
                 </div>
               </div>
             )}
@@ -1089,7 +1200,10 @@ function PolicyCard({
                 AI 解读中...
               </>
             ) : (
-              <>✨ AI 解读这条政策</>
+              <>
+                <Sparkles size={14} />
+                AI 解读这条政策
+              </>
             )}
           </button>
         )}
@@ -1100,7 +1214,7 @@ function PolicyCard({
             <span className="text-xs text-gray-500">
               申请进度
               {applicationProgress && Object.values(applicationProgress.steps).some(Boolean) && (
-                <span className="ml-1.5 text-[10px] text-gray-400">
+                <span className="ml-1.5 text-2xs text-gray-400">
                   ({Object.values(applicationProgress.steps).filter(Boolean).length}/4)
                 </span>
               )}
@@ -1109,9 +1223,10 @@ function PolicyCard({
               href={policy.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-500 hover:underline"
+              className="text-xs text-blue-500 hover:underline inline-flex items-center gap-0.5"
             >
-              查看政策原文 →
+              查看政策原文
+              <ArrowUp size={10} className="rotate-45" />
             </a>
           </div>
           <ApplicationProgressBar
@@ -1121,7 +1236,7 @@ function PolicyCard({
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -1139,7 +1254,7 @@ function ChecklistModal({
 
   const handleCopy = async () => {
     const lines = [
-      "📋 我的就业政策申请清单",
+      "我的就业政策申请清单",
       `生成时间：${new Date().toLocaleString("zh-CN")}`,
       "",
     ];
@@ -1190,7 +1305,10 @@ function ChecklistModal({
         {/* 头部 */}
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">📋 我的申请清单</h2>
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <ClipboardList size={18} className="text-emerald-600" />
+              我的申请清单
+            </h2>
             <p className="text-xs text-gray-500 mt-1">
               已收藏 {favoritePolicies.length} 条政策
             </p>
@@ -1199,7 +1317,7 @@ function ChecklistModal({
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 text-gray-400"
           >
-            ✕
+            <span className="text-xl">✕</span>
           </button>
         </div>
 
@@ -1207,7 +1325,7 @@ function ChecklistModal({
         <div className="p-5 overflow-y-auto flex-1">
           {favoritePolicies.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-4xl mb-3">📭</div>
+              <Heart size={40} className="mx-auto mb-3 text-gray-300" />
               <p className="text-sm text-gray-500 mb-1">还没有收藏任何政策</p>
               <p className="text-xs text-gray-400">
                 点击政策卡片右上角的星标按钮，收藏感兴趣的政策
@@ -1267,15 +1385,17 @@ function ChecklistModal({
           <div className="p-4 border-t border-gray-100 flex gap-2">
             <button
               onClick={handleCopy}
-              className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors"
+              className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors inline-flex items-center justify-center gap-1.5"
             >
-              {copied ? "✓ 已复制" : "📋 复制到剪贴板"}
+              {copied ? <CheckCircle size={14} /> : <ClipboardList size={14} />}
+              {copied ? "已复制" : "复制到剪贴板"}
             </button>
             <button
               onClick={handlePrint}
-              className="flex-1 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-1.5"
             >
-              🖨️ 打印
+              <Download size={14} />
+              打印
             </button>
           </div>
         )}
@@ -1719,13 +1839,15 @@ export default function Report({
               onClick={handleShare}
               className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
             >
-              🔗 分享
+              <Share2 size={12} />
+              分享
             </button>
             <button
               onClick={() => setShowChecklist(true)}
               className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
             >
-              📋 导出清单
+              <ClipboardList size={12} />
+              导出清单
               {favorites.size > 0 && (
                 <span className="px-1.5 py-0.5 bg-white/30 rounded-full text-xs">
                   {favorites.size}
@@ -1754,7 +1876,7 @@ export default function Report({
 
         <div className="flex items-baseline gap-2">
           <span className="text-sm text-emerald-100">预计可享受补贴</span>
-          <span className="text-3xl font-bold">{totalSubsidyEstimate}</span>
+          <SubsidyDisplay estimate={totalSubsidyEstimate} />
         </div>
       </div>
 
@@ -1767,34 +1889,38 @@ export default function Report({
       {/* KPI 卡片区 */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KpiCard
-          icon="📊"
+          icon={BarChart3}
           value={kpiData.total}
           label="匹配政策数"
           color="#10b981"
+          isNumeric
         />
         <KpiCard
-          icon="💰"
+          icon={Wallet}
           value={kpiData.subsidy.replace("约 ", "")}
           label="预估补贴总额"
           color="#f59e0b"
         />
         <KpiCard
-          icon="🎯"
+          icon={Target}
           value={kpiData.highMatch}
           label="高匹配政策数"
           color="#6366f1"
+          isNumeric
         />
         <KpiCard
-          icon="✅"
+          icon={CheckCircle}
           value={kpiData.easyApply}
           label="可立即申请数"
           color="#ef4444"
+          isNumeric
         />
         <KpiCard
-          icon="📝"
+          icon={FileText}
           value={kpiData.applied}
           label="已申请/通过"
           color="#0ea5e9"
+          isNumeric
         />
       </div>
 
@@ -1811,7 +1937,10 @@ export default function Report({
               {batchProgressText}
             </>
           ) : (
-            <>✨ 一键解读 Top5</>
+            <>
+              <Sparkles size={14} />
+              一键解读 Top5
+            </>
           )}
         </button>
         <span className="text-xs text-gray-400">
@@ -1848,7 +1977,7 @@ export default function Report({
 
         {filteredPolicies.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-            <div className="text-4xl mb-3">🔍</div>
+            <Search size={40} className="mx-auto mb-3 text-gray-300" />
             <p className="text-sm text-gray-500 mb-1">没有符合条件的政策</p>
             <p className="text-xs text-gray-400">试试调整筛选条件或清空搜索</p>
           </div>
@@ -1882,7 +2011,8 @@ export default function Report({
           onClick={() => setShowCompare(true)}
           className="fixed bottom-20 right-6 z-40 px-4 py-3 rounded-full bg-indigo-500 text-white text-sm font-medium shadow-lg hover:bg-indigo-600 transition-colors flex items-center gap-2 print:hidden"
         >
-          📊 对比 {compareIds.size}/3
+          <GitCompare size={14} />
+          对比 {compareIds.size}/3
         </button>
       )}
 

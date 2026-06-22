@@ -34,6 +34,16 @@
 - **社保缴纳月数字段**：数字输入框（0-480 月），用于匹配有社保要求的政策
 - **应届生误判修复**：修复"应届毕业生"被误判为不满足"毕业2年内应届生"条件的 bug，现在应届生身份自动满足此类条件
 
+### V6 新增：UI/UX 全面升级
+
+- **矢量图标系统**：引入 lucide-react 图标库，全局替换 30+ 处 emoji 为统一的矢量图标（BarChart3/Wallet/Target/CheckCircle/FileText 等），视觉风格统一，支持 size/color/fill 精细控制
+- **设计 Token 体系**：在 globals.css 中建立 CSS 变量系统（品牌色/语义色/阴影层级/圆角/字号），新增工具类（.text-2xs/.card-hover/.btn-press/.text-gradient）和 focus-visible 键盘导航环
+- **渐进式披露**：政策卡片新增"查看匹配详情"折叠区，默认收起匹配维度可视化/条件差距展示/同类用户反馈，降低初始信息密度，点击展开查看完整匹配详情
+- **framer-motion 动效**：政策卡片 stagger 入场动画（opacity+y 位移，delay 随 index 递增），KPI 卡片入场动画，折叠区高度动画，提升视觉流畅度
+- **数字 count-up 动画**：KPI 卡片数字和补贴总额使用 requestAnimationFrame + easeOutCubic 缓动动画，从 0 渐进到目标值，增强数据感知
+- **独立介绍页**：新增 `/landing` 路由，用户导向的简化介绍页（Hero+3 步说明+数据亮点+功能亮点+CTA），首页顶部添加返回介绍页入口
+- **移动端可读性优化**：将 17 处 text-[10px] 替换为 text-2xs（11px），提升移动端辅助文字可读性
+
 ## 技术栈
 
 - Next.js 16 + React 19 + TypeScript
@@ -41,6 +51,8 @@
 - Zustand 状态管理（含 persist 中间件）
 - ECharts 6 数据可视化
 - 智谱 GLM-4.7-Flash AI 模型
+- lucide-react 矢量图标库（V6 新增）
+- framer-motion 动画库（V6 新增）
 
 ## 快速开始
 
