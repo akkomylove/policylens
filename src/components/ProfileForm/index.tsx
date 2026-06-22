@@ -14,15 +14,27 @@ const IDENTITIES: IdentityType[] = [
   "往届毕业生",
   "退役军人",
   "返乡创业者",
+  "创业者",
   "灵活就业人员",
   "在职人员",
+  "企业职工",
   "失业人员",
+  "就业困难人员",
   "农民工",
+  "残疾人",
+  "返乡入乡人员",
 ];
 
 const EDUCATIONS: EducationLevel[] = ["高中及以下", "大专", "本科", "硕士", "博士"];
 
-const STATUSES: EmploymentStatus[] = ["求职中", "已就业", "创业中", "待业"];
+const STATUSES: EmploymentStatus[] = [
+  "求职中",
+  "已就业",
+  "创业中",
+  "待业",
+  "灵活就业",
+  "退休",
+];
 
 const INDUSTRIES: IndustryIntent[] = [
   "不限",
@@ -33,6 +45,10 @@ const INDUSTRIES: IndustryIntent[] = [
   "金融业",
   "教育",
   "医疗",
+  "建筑业",
+  "文化产业",
+  "科技研发",
+  "电商物流",
 ];
 
 const PROVINCES = [
@@ -41,6 +57,9 @@ const PROVINCES = [
   "湖北", "湖南", "广东", "广西", "海南", "重庆", "四川", "贵州",
   "云南", "西藏", "陕西", "甘肃", "青海", "宁夏", "新疆",
 ];
+
+// 当前年份，用于毕业年份默认值
+const CURRENT_YEAR = new Date().getFullYear();
 
 // ============ 搜索式省份选择器 ============
 function SearchableProvinceSelect({
@@ -181,6 +200,45 @@ function CitySelect({
   );
 }
 
+// ============ 数字输入框组件 ============
+function NumberInput({
+  value,
+  onChange,
+  placeholder,
+  min,
+  max,
+  suffix,
+}: {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  suffix?: string;
+}) {
+  return (
+    <div className="relative">
+      <input
+        type="number"
+        value={value ?? ""}
+        onChange={(e) => {
+          const v = e.target.value;
+          onChange(v === "" ? undefined : Number(v));
+        }}
+        placeholder={placeholder}
+        min={min}
+        max={max}
+        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:outline-none text-gray-900 pr-12"
+      />
+      {suffix && (
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+          {suffix}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function ProfileForm() {
   const { userProfile, updateUserProfile, currentStep, setCurrentStep } = useAppStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -215,6 +273,9 @@ export default function ProfileForm() {
     }
   };
 
+  // 判断是否为毕业生身份（用于显示毕业年份字段）
+  const isGraduate = userProfile.identity === "应届毕业生" || userProfile.identity === "往届毕业生";
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* 步骤指示器 */}
@@ -247,20 +308,20 @@ export default function ProfileForm() {
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">你的身份</h2>
-              <p className="text-sm text-gray-500">选择最符合你的身份类型</p>
+              <p className="text-sm text-gray-500">选择最符合你的身份类型（可多选细分）</p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 身份类型
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {IDENTITIES.map((item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => updateUserProfile({ identity: item })}
-                    className={`px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all min-h-[44px] ${
+                    className={`px-3 py-2.5 rounded-xl border-2 text-xs sm:text-sm font-medium transition-all min-h-[44px] ${
                       userProfile.identity === item
                         ? "border-emerald-500 bg-emerald-50 text-emerald-700"
                         : "border-gray-200 hover:border-emerald-300 text-gray-700"
@@ -299,6 +360,36 @@ export default function ProfileForm() {
                 <p className="text-red-500 text-xs mt-2">{errors.education}</p>
               )}
             </div>
+
+            {/* 毕业年份（仅毕业生显示） */}
+            {isGraduate && (
+              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <label className="block text-sm font-medium text-blue-800 mb-2">
+                  毕业年份 <span className="text-xs text-blue-500 font-normal">（用于精准判断资格窗口期）</span>
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i).map((year) => (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => updateUserProfile({ graduationYear: year })}
+                      className={`px-2 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                        userProfile.graduationYear === year
+                          ? "border-blue-500 bg-blue-100 text-blue-700"
+                          : "border-blue-200 hover:border-blue-400 text-blue-700 bg-white"
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-blue-500 mt-2">
+                  {userProfile.identity === "应届毕业生"
+                    ? "💡 应届毕业生默认满足「毕业2年内」条件，填写年份可获得更精准的资格窗口期预警"
+                    : "💡 往届毕业生请填写实际毕业年份，用于判断是否仍在资格窗口期内"}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -345,7 +436,7 @@ export default function ProfileForm() {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 就业状态
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {STATUSES.map((item) => (
                   <button
                     key={item}
@@ -365,6 +456,45 @@ export default function ProfileForm() {
                 <p className="text-red-500 text-xs mt-2">{errors.employmentStatus}</p>
               )}
             </div>
+
+            {/* 补充信息：年龄 + 社保月数 */}
+            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 space-y-4">
+              <div>
+                <h3 className="text-sm font-medium text-amber-800 mb-1">
+                  补充信息 <span className="text-xs text-amber-500 font-normal">（可选，用于精准匹配）</span>
+                </h3>
+                <p className="text-xs text-amber-600">部分政策有年龄或社保缴纳要求，填写后可获得更精准的匹配</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-amber-700 mb-1.5">
+                    年龄
+                  </label>
+                  <NumberInput
+                    value={userProfile.age}
+                    onChange={(age) => updateUserProfile({ age })}
+                    placeholder="如 25"
+                    min={16}
+                    max={70}
+                    suffix="岁"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-amber-700 mb-1.5">
+                    社保缴纳月数
+                  </label>
+                  <NumberInput
+                    value={userProfile.socialSecurityMonths}
+                    onChange={(socialSecurityMonths) => updateUserProfile({ socialSecurityMonths })}
+                    placeholder="如 12"
+                    min={0}
+                    max={480}
+                    suffix="月"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -379,7 +509,7 @@ export default function ProfileForm() {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 行业意向
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
                 {INDUSTRIES.map((item) => (
                   <button
                     key={item}
@@ -407,6 +537,11 @@ export default function ProfileForm() {
                 <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
                   {userProfile.education}
                 </span>
+                {userProfile.graduationYear && (
+                  <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
+                    {userProfile.graduationYear}年毕业
+                  </span>
+                )}
                 <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
                   {userProfile.province}
                   {userProfile.city && userProfile.city !== userProfile.province
@@ -416,6 +551,16 @@ export default function ProfileForm() {
                 <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
                   {userProfile.employmentStatus}
                 </span>
+                {userProfile.age && (
+                  <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
+                    {userProfile.age}岁
+                  </span>
+                )}
+                {userProfile.socialSecurityMonths !== undefined && (
+                  <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
+                    社保{userProfile.socialSecurityMonths}月
+                  </span>
+                )}
                 {userProfile.industryIntent && userProfile.industryIntent !== "不限" && (
                   <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-700">
                     {userProfile.industryIntent}

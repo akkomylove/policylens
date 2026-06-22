@@ -26,17 +26,24 @@ const SEMANTIC_ALIASES: Record<string, Record<string, string[]>> = {
     应届毕业生: ["应届", "毕业年度", "高校毕业生", "毕业生"],
     往届毕业生: ["往届", "离校", "未就业高校毕业生"],
     退役军人: ["退伍", "转业", "军人"],
-    返乡创业者: ["返乡", "创业", "自主创业"],
+    返乡创业者: ["返乡", "返乡入乡", "创业", "自主创业"],
+    创业者: ["创业", "自主创业", "个体经营", "初创企业"],
     灵活就业人员: ["灵活就业", "新就业形态"],
-    在职人员: ["企业职工", "职工", "参保人员"],
+    在职人员: ["企业职工", "职工", "参保人员", "在职"],
+    企业职工: ["企业职工", "职工", "参保人员", "在职"],
     失业人员: ["失业", "就业困难人员", "登记失业"],
+    就业困难人员: ["就业困难", "登记失业", "失业"],
     农民工: ["农村劳动力", "进城务工"],
+    残疾人: ["残疾", "残疾人"],
+    返乡入乡人员: ["返乡", "入乡", "返乡入乡"],
   },
   status: {
     求职中: ["吸纳就业", "就业补贴", "见习", "求职"],
     已就业: ["技能提升", "培训补贴", "在职", "职工"],
     创业中: ["创业担保贷款", "创业补贴", "创业扶持", "自主创业"],
     待业: ["失业保险", "就业援助", "再就业", "就业困难"],
+    灵活就业: ["灵活就业", "新就业形态", "平台经济"],
+    退休: ["退休", "离退休"],
   },
 };
 
@@ -107,6 +114,67 @@ function evaluateCondition(
   condition: AtomicCondition,
   userProfile: UserProfile
 ): ConditionResult {
+  // V5.1 修复：毕业年份条件的特殊处理
+  // 如果政策要求"毕业2年内的应届毕业生"，而用户身份已是"应届毕业生"，
+  // 则自动通过（"应届"本身即意味着毕业2年内），避免误判为差条件
+  if (
+    condition.category === "graduationYear" &&
+    condition.userField === "graduationYear"
+  ) {
+    // 用户身份是应届毕业生，自动满足"毕业N年内"条件
+    if (userProfile.identity === "应届毕业生") {
+      return {
+        condition,
+        passed: true,
+        actualValue: "应届毕业生（默认满足）",
+        gap: undefined,
+      };
+    }
+    // 用户身份是往届毕业生，根据实际毕业年份判断（如果填了的话）
+    if (userProfile.identity === "往届毕业生") {
+      const gradYear = userProfile.graduationYear;
+      if (gradYear === undefined || gradYear === null) {
+        // 往届毕业生未填年份，提示需要填写
+        return {
+          condition,
+          passed: false,
+          actualValue: undefined,
+          gap: condition.required
+            ? `需要${condition.label}（请在画像中填写毕业年份）`
+            : `可选：${condition.label}（建议填写毕业年份以精确判断）`,
+        };
+      }
+      // 根据条件 operator 判断
+      const threshold = Number(condition.value);
+      let passed = false;
+      switch (condition.operator) {
+        case "gte": passed = gradYear >= threshold; break;
+        case "gt": passed = gradYear > threshold; break;
+        case "lte": passed = gradYear <= threshold; break;
+        case "lt": passed = gradYear < threshold; break;
+        case "eq": passed = gradYear === threshold; break;
+        default: passed = gradYear >= threshold;
+      }
+      return {
+        condition,
+        passed,
+        actualValue: `${gradYear}年毕业`,
+        gap: passed
+          ? undefined
+          : condition.required
+            ? `不符合：${condition.label}（毕业年份${gradYear}）`
+            : `可选未满足：${condition.label}（毕业年份${gradYear}）`,
+      };
+    }
+    // 其他身份（非应届/往届），此条件不适用
+    return {
+      condition,
+      passed: false,
+      actualValue: undefined,
+      gap: `可选未满足：${condition.label}（非毕业生身份）`,
+    };
+  }
+
   const userValue = condition.userField
     ? getUserFieldValue(condition.userField, userProfile)
     : undefined;

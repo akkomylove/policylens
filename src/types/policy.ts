@@ -71,14 +71,25 @@ export type IdentityType =
   | "往届毕业生"
   | "退役军人"
   | "返乡创业者"
+  | "创业者"
   | "灵活就业人员"
   | "在职人员"
+  | "企业职工"
   | "失业人员"
-  | "农民工";
+  | "就业困难人员"
+  | "农民工"
+  | "残疾人"
+  | "返乡入乡人员";
 
 export type EducationLevel = "高中及以下" | "大专" | "本科" | "硕士" | "博士";
 
-export type EmploymentStatus = "求职中" | "已就业" | "创业中" | "待业";
+export type EmploymentStatus =
+  | "求职中"
+  | "已就业"
+  | "创业中"
+  | "待业"
+  | "灵活就业"
+  | "退休";
 
 export type IndustryIntent =
   | "制造业"
@@ -88,6 +99,10 @@ export type IndustryIntent =
   | "金融业"
   | "教育"
   | "医疗"
+  | "建筑业"
+  | "文化产业"
+  | "科技研发"
+  | "电商物流"
   | "不限";
 
 export interface UserProfile {
