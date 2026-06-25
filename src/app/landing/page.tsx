@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -11,8 +12,13 @@ import {
   MapPin,
   ShieldCheck,
 } from "lucide-react";
+import { trackPageView } from "@/lib/analytics";
 
 export default function LandingPage() {
+  useEffect(() => {
+    trackPageView("/landing");
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white">
       {/* 顶部导航 */}

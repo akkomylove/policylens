@@ -1,0 +1,40 @@
+{
+  "name": "PolicyLens · 就业政策智能解读器",
+  "short_name": "PolicyLens",
+  "description": "填写你的画像，3 分钟知道你能享受哪些就业政策补贴。AI 智能匹配 + 大白话解读 + 可视化看板。",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "lang": "zh-CN",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "开始匹配",
+      "short_name": "匹配",
+      "description": "填写画像并获取政策匹配",
+      "url": "/?action=match"
+    },
+    {
+      "name": "查看介绍",
+      "short_name": "介绍",
+      "description": "查看产品介绍页",
+      "url": "/landing"
+    }
+  ]
+}

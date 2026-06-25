@@ -44,6 +44,15 @@
 - **独立介绍页**：新增 `/landing` 路由，用户导向的简化介绍页（Hero+3 步说明+数据亮点+功能亮点+CTA），首页顶部添加返回介绍页入口
 - **移动端可读性优化**：将 17 处 text-[10px] 替换为 text-2xs（11px），提升移动端辅助文字可读性
 
+### V6.1 新增：安全 + 可靠性 + 可发现性 + 性能六项强化
+
+- **AI API 限流与输入校验**：基于 IP 的内存限流（10 次/分钟，滑动窗口 + 定期清理），输入字段类型/长度校验（policy.id/title/content，userProfile.identity/education/province），同 policyId 并发请求合并去重（dedupeRequest），限流返回 429 + Retry-After 头
+- **匹配引擎单元测试**：Vitest + 94 个测试用例覆盖三大核心模块——`extractSubsidyAmount`（19 用例，覆盖 7 种金额格式+边界条件+千位分隔符+多金额累加）、`evaluateAtomicConditions`（25 用例，覆盖 8 种 operator + 学历等级 + 毕业年份特殊逻辑 + gap 提示）、`matchPolicy/matchAllPolicies`（18 用例，覆盖 5 维度匹配+优先级排序+边界用例）。同时修复了 `extractSubsidyAmount` 范围匹配后未调用 markRange 导致单值重复累加的 bug
+- **PWA 离线能力**：Service Worker（`/sw.js`）三层缓存策略——policies.json/cities.json/stats.json cache-first、Next.js 静态资源 cache-first、页面导航 stale-while-revalidate、API 调用 network-only；Web App Manifest（`/manifest.webmanifest`）含应用名/主题色/图标/快捷方式；客户端注册器仅在生产环境激活
+- **SEO 与社交分享**：动态 sitemap.xml + robots.txt（自动生成路由）；Open Graph + Twitter Card 元数据（首页/介绍页/报告页独立 metadata，含 canonical URL）；JSON-LD 结构化数据（WebApplication + Organization schema，含 featureList 和 offers）；metadataBase 配置便于相对路径解析
+- **基础数据埋点**：轻量自托管方案（`/api/track` 接口 + 内存存储 + GET 统计查询），客户端使用 navigator.sendBeacon 不阻塞页面卸载；5 类关键事件——page_view（页面访问）、profile_submit（画像提交，含匿名画像字段）、match_complete（匹配完成，含匹配数和最高优先级）、interpret_request（AI 解读请求，含 policyId 和 priority）、share_click（分享点击）
+- **性能优化**：Dashboard 组件使用 `next/dynamic` 懒加载（ECharts ~400KB 仅在用户切到"数据看板"Tab 时加载）；KpiCard 和 SubsidyDisplay 使用 `React.memo` 包装避免父组件 re-render 时重复渲染（props 为稳定原始值）
+
 ## 技术栈
 
 - Next.js 16 + React 19 + TypeScript
@@ -53,6 +62,8 @@
 - 智谱 GLM-4.7-Flash AI 模型
 - lucide-react 矢量图标库（V6 新增）
 - framer-motion 动画库（V6 新增）
+- Vitest 单元测试（V6.1 新增）
+- Service Worker + Web App Manifest PWA（V6.1 新增）
 
 ## 快速开始
 
@@ -103,15 +114,38 @@ npm start
 
 ```
 policylens/
-├── public/data/
-│   ├── policies.json    # 51 条结构化政策数据
-│   └── stats.json       # 宏观就业统计数据
+├── public/
+│   ├── data/
+│   │   ├── policies.json    # 51 条结构化政策数据
+│   │   └── stats.json        # 宏观就业统计数据
+│   ├── manifest.webmanifest  # PWA 清单（V6.1）
+│   ├── sw.js                 # Service Worker（V6.1）
+│   └── icon.svg              # 应用图标（V6.1）
 ├── src/
-│   ├── app/             # Next.js App Router
-│   ├── components/      # React 组件
-│   ├── lib/             # 工具库（AI、数据、状态、匹配引擎）
-│   └── types/           # TypeScript 类型定义
-└── start.bat            # Windows 一键启动脚本
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── interpret/    # AI 解读 API（含限流/校验/去重）
+│   │   │   └── track/        # 数据埋点 API（V6.1）
+│   │   ├── landing/          # 介绍页（含独立 metadata）
+│   │   ├── report/           # 报告页（含独立 metadata）
+│   │   ├── robots.ts         # robots.txt（V6.1）
+│   │   ├── sitemap.ts        # sitemap.xml（V6.1）
+│   │   └── layout.tsx        # 根布局（含 OG/JSON-LD/PWA 注册）
+│   ├── components/
+│   │   ├── Dashboard/        # 数据看板（next/dynamic 懒加载）
+│   │   ├── PWA/              # Service Worker 注册器（V6.1）
+│   │   ├── ProfileForm/      # 用户画像表单（含埋点）
+│   │   └── Report/           # 匹配报告（含 React.memo + 埋点）
+│   ├── lib/
+│   │   ├── matcher/          # 匹配引擎（含 .test.ts 单元测试）
+│   │   ├── ai.ts             # AI 调用（含 7 天缓存）
+│   │   ├── analytics.ts      # 埋点客户端（V6.1）
+│   │   ├── rateLimit.ts      # IP 限流工具（V6.1）
+│   │   ├── requestDedup.ts   # 请求去重工具（V6.1）
+│   │   └── store.ts          # Zustand 状态管理
+│   └── types/                # TypeScript 类型定义
+├── vitest.config.ts          # Vitest 配置（V6.1）
+└── start.bat                 # Windows 一键启动脚本
 ```
 
 ## 许可证

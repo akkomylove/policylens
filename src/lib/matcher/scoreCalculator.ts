@@ -15,20 +15,7 @@ export function extractSubsidyAmount(amountStr: string): number {
 
   let totalAmount = 0;
 
-  // 1. 先匹配"XX-XX万元/年"范围（取最大值，优先于单值匹配）
-  const rangeWanYearMatches = amountStr.matchAll(/(\d+(?:\.\d+)?)\s*[-—]\s*(\d+(?:\.\d+)?)\s*万元\s*\/\s*年/g);
-  for (const match of rangeWanYearMatches) {
-    totalAmount += parseFloat(match[2]);
-  }
-
-  // 2. 匹配"XX-XX万元"范围（取最大值，排除"万人次"和已匹配的"/年"）
-  const rangeWanMatches = amountStr.matchAll(/(\d+(?:\.\d+)?)\s*[-—]\s*(\d+(?:\.\d+)?)\s*万元(?!次|\/年)/g);
-  for (const match of rangeWanMatches) {
-    totalAmount += parseFloat(match[2]);
-  }
-
-  // 3. 匹配"最高XX万元" / "不超过XX万元" / "XX万元/年" / "XX万元"（排除"万人次"和范围已匹配的）
-  // 先用占位符标记已匹配区间，避免重复累加
+  // 先用占位符标记已匹配区间，避免重复累加（V6.1 修复：范围匹配也需 markRange）
   const matchedRanges: Array<[number, number]> = [];
   const markRange = (start: number, end: number) => {
     matchedRanges.push([start, end]);
@@ -36,6 +23,26 @@ export function extractSubsidyAmount(amountStr: string): number {
   const isOverlapping = (start: number, end: number) => {
     return matchedRanges.some(([s, e]) => start < e && end > s);
   };
+
+  // 1. 先匹配"XX-XX万元/年"范围（取最大值，优先于单值匹配）
+  const rangeWanYearMatches = amountStr.matchAll(/(\d+(?:\.\d+)?)\s*[-—]\s*(\d+(?:\.\d+)?)\s*万元\s*\/\s*年/g);
+  for (const match of rangeWanYearMatches) {
+    if (match.index !== undefined && !isOverlapping(match.index, match.index + match[0].length)) {
+      totalAmount += parseFloat(match[2]);
+      markRange(match.index, match.index + match[0].length);
+    }
+  }
+
+  // 2. 匹配"XX-XX万元"范围（取最大值，排除"万人次"和已匹配的"/年"）
+  const rangeWanMatches = amountStr.matchAll(/(\d+(?:\.\d+)?)\s*[-—]\s*(\d+(?:\.\d+)?)\s*万元(?!次|\/年)/g);
+  for (const match of rangeWanMatches) {
+    if (match.index !== undefined && !isOverlapping(match.index, match.index + match[0].length)) {
+      totalAmount += parseFloat(match[2]);
+      markRange(match.index, match.index + match[0].length);
+    }
+  }
+
+  // 3. 匹配"最高XX万元" / "不超过XX万元" / "XX万元/年" / "XX万元"（排除"万人次"和范围已匹配的）
 
   // "最高XX万元" / "不超过XX万元"
   const maxMatches = amountStr.matchAll(/(?:最高|不超过|至多)\s*(\d+(?:\.\d+)?)\s*万元(?!次)/g);

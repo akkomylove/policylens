@@ -11,6 +11,7 @@ import { matchAllPolicies } from "@/lib/matcher/ruleMatcher";
 import { calculateSummary } from "@/lib/matcher/scoreCalculator";
 import { enrichPoliciesWithStatus } from "@/lib/effectiveStatus";
 import { getProfileFromUrl } from "@/lib/share";
+import { track, trackPageView } from "@/lib/analytics";
 import { Policy } from "@/types/policy";
 
 export default function Home() {
@@ -28,6 +29,11 @@ export default function Home() {
 
   useEffect(() => {
     loadPolicies().then((data) => setPolicies(enrichPoliciesWithStatus(data)));
+  }, []);
+
+  // 页面访问埋点
+  useEffect(() => {
+    trackPageView("/");
   }, []);
 
   // 检测 URL 中的分享参数，自动填充表单并触发匹配
@@ -50,6 +56,13 @@ export default function Home() {
           matched,
           userProfile
         );
+
+        // 匹配完成埋点
+        track("match_complete", {
+          matchedCount: matched.length,
+          totalSubsidy: totalSubsidyEstimate,
+          topPriority: matched[0]?.priority || "none",
+        });
 
         setMatchResult({
           userProfile,

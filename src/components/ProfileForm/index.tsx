@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "@/lib/store";
+import { track } from "@/lib/analytics";
 import {
   IdentityType,
   EducationLevel,
@@ -269,6 +270,13 @@ export default function ProfileForm() {
 
   const handleSubmit = () => {
     if (validateStep(currentStep)) {
+      track("profile_submit", {
+        identity: userProfile.identity,
+        education: userProfile.education,
+        province: userProfile.province,
+        employmentStatus: userProfile.employmentStatus,
+        industryIntent: userProfile.industryIntent,
+      });
       setCurrentStep(3); // 进入结果页
     }
   };

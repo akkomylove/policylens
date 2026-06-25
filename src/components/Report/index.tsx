@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3,
@@ -53,6 +53,7 @@ import { useAppStore, ApplicationStatus, ApplicationProgress, ApplicationStep } 
 import { generateShareLink } from "@/lib/share";
 import { getEffectiveStatusInfo, getCountdownInfo, getEligibilityWindow } from "@/lib/effectiveStatus";
 import { useCountUp, formatNumber } from "@/lib/useCountUp";
+import { track } from "@/lib/analytics";
 import CompareModal from "./CompareModal";
 import ApplicationRoadmap from "./ApplicationRoadmap";
 
@@ -316,7 +317,7 @@ type FilterMatch = "all" | "high" | "medium" | "low";
 type SortBy = "matchDesc" | "amountDesc" | "dateDesc" | "difficultyAsc";
 
 // ============ KPI 卡片 ============
-function KpiCard({
+const KpiCard = memo(function KpiCard({
   icon: Icon,
   value,
   label,
@@ -357,10 +358,10 @@ function KpiCard({
       </div>
     </motion.div>
   );
-}
+});
 
 // ============ V6：补贴总额 count-up 展示 ============
-function SubsidyDisplay({ estimate }: { estimate: string }) {
+const SubsidyDisplay = memo(function SubsidyDisplay({ estimate }: { estimate: string }) {
   // 提取数字部分（如"约 35000 元" → 35000）
   const match = estimate.match(/[\d,]+/);
   const numericValue = match ? parseInt(match[0].replace(/,/g, ""), 10) : 0;
@@ -375,7 +376,7 @@ function SubsidyDisplay({ estimate }: { estimate: string }) {
       {prefix}{formatNumber(animatedValue)}{suffix}
     </span>
   );
-}
+});
 
 // ============ 筛选工具栏 ============
 function FilterToolbar({
@@ -1540,6 +1541,12 @@ export default function Report({
         return;
       }
 
+      track("interpret_request", {
+        policyId: policy.id,
+        priority: policy.priority,
+        matchScore: policy.matchScore,
+      });
+
       setLoadingId(policy.id);
       try {
         const response = await fetch("/api/interpret", {
@@ -1663,6 +1670,7 @@ export default function Report({
   // 分享
   const handleShare = useCallback(async () => {
     const link = generateShareLink(userProfile);
+    track("share_click", { method: "clipboard" });
     try {
       await navigator.clipboard.writeText(link);
       showToast("分享链接已复制，可粘贴给朋友");

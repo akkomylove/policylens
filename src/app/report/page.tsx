@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { loadPolicies } from "@/lib/data";
+import { trackPageView } from "@/lib/analytics";
 import Report from "@/components/Report";
-import Dashboard from "@/components/Dashboard";
 import { Policy } from "@/types/policy";
+
+// 懒加载 Dashboard（含 ECharts ~400KB），仅在用户切到"数据看板"Tab 时加载
+const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-sm text-gray-400 animate-pulse">
+      正在加载数据看板...
+    </div>
+  ),
+});
 
 export default function ReportPage() {
   const router = useRouter();
@@ -24,6 +35,7 @@ export default function ReportPage() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab("dashboard");
     }
+    trackPageView("/report");
   }, []);
 
   // 如果没有匹配结果，返回首页
