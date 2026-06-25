@@ -62,7 +62,7 @@ export default function ReportPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-gray-50 outline-none">
       {/* 顶部导航 */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-10 print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -71,6 +71,7 @@ export default function ReportPage() {
               reset();
               router.push("/");
             }}
+            aria-label="重新填写画像"
             className="flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
           >
             <span>←</span>
@@ -86,6 +87,7 @@ export default function ReportPage() {
         <div className="flex gap-2 bg-white rounded-xl p-1 border border-gray-100">
           <button
             onClick={() => handleTabChange("report")}
+            aria-pressed={activeTab === "report"}
             className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               activeTab === "report"
                 ? "bg-emerald-500 text-white"
@@ -96,6 +98,7 @@ export default function ReportPage() {
           </button>
           <button
             onClick={() => handleTabChange("dashboard")}
+            aria-pressed={activeTab === "dashboard"}
             className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               activeTab === "dashboard"
                 ? "bg-emerald-500 text-white"
@@ -115,6 +118,7 @@ export default function ReportPage() {
             userProfile={matchResult.userProfile}
             totalSubsidyEstimate={matchResult.totalSubsidyEstimate}
             summary={matchResult.summary}
+            allPolicies={allPolicies}
           />
         ) : (
           <Dashboard

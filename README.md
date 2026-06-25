@@ -10,7 +10,7 @@
 - **AI 解读**：调用智谱 GLM-4.7-Flash 模型，把晦涩政策翻译成大白话，输出 10 个结构化字段（为什么是你/为什么现在/能拿什么/申请材料/办理地点/咨询电话/申请步骤等），含降级方案和 7 天缓存
 - **数据看板**：3 个 ECharts 图表（补贴金额 Top10 柱状图/5 维度匹配雷达图/补贴类型分布饼图）+ 6 张决策卡片（画像总览/申请路线图/补贴预估/即将截止/同类用户/宏观背景）
 - **政策卡片**：4 大实用性功能（申请材料清单/办理地点+联系方式/申请时限倒计时/同类用户反馈），标签精简为 4 核心+折叠
-- **51 条政策**：覆盖 31 个省份，含国务院、人社部及各省市政策，含申报截止日期和同类用户申请数
+- **58 条政策**：覆盖 31 个省份，含国务院、人社部及各省市政策，含申报截止日期和同类用户申请数
 - **体验打磨**：返回顶部按钮、打印样式、Tab 状态 URL 持久化、表单草稿持久化、AI 解读骨架屏、错误边界兜底
 
 ### V5 新增：精准匹配 + 行动闭环
@@ -53,6 +53,16 @@
 - **基础数据埋点**：轻量自托管方案（`/api/track` 接口 + 内存存储 + GET 统计查询），客户端使用 navigator.sendBeacon 不阻塞页面卸载；5 类关键事件——page_view（页面访问）、profile_submit（画像提交，含匿名画像字段）、match_complete（匹配完成，含匹配数和最高优先级）、interpret_request（AI 解读请求，含 policyId 和 priority）、share_click（分享点击）
 - **性能优化**：Dashboard 组件使用 `next/dynamic` 懒加载（ECharts ~400KB 仅在用户切到"数据看板"Tab 时加载）；KpiCard 和 SubsidyDisplay 使用 `React.memo` 包装避免父组件 re-render 时重复渲染（props 为稳定原始值）
 
+### V6.2 新增：用户体验与可发现性七项强化
+
+- **P2-A 政策详情独立路由**：SSG 预渲染 58 个 `/policy/[id]` 静态页（`generateStaticParams` + `dynamicParams = false`），每条政策独立 SEO、独立分享链接、独立 OG/Twitter Card metadata；含 JSON-LD `GovernmentService` 结构化数据，截止日期倒计时、政策原文、申请条件、官方入口（防骗警示）、相似政策推荐
+- **P2-B 报告导出 PDF/图片**：基于 `html2canvas-pro`（兼容 Tailwind v4 oklch 颜色）+ `jsPDF`，支持导出为 PNG 图片（适合微信分享）或 A4 多页 PDF（可打印）；导出时通过 CSS `.exporting-report` 模式自动隐藏交互元素（按钮/筛选/返回顶部等）、展开折叠区、禁用动画；底部绘制水印页脚（用户画像摘要/补贴预估/生成时间/免责声明）；导出按钮使用动态 `import()` 减小首屏 bundle
+- **P2-C AI 智能追问**：`/api/chat` SSE 流式接口（GLM-4.7-Flash `stream: true`），支持基于政策上下文的多轮追问；客户端 `PolicyChat` 组件使用 `ReadableStream` reader 实时增量渲染、`AbortController` 支持取消、4 个快捷建议问题、错误降级到 12333 咨询；含 IP 限流（10 次/分）和输入校验（question ≤500 字）
+- **P2-F 无障碍 a11y 强化**：`SkipLink` 跳过到主内容（`sr-only focus:not-sr-only` 模式）；`main` 标签 `id="main-content" tabIndex={-1}`；按钮组（identity/education/graduationYear/employmentStatus/industryIntent）全部加 `aria-pressed`；`SearchableProvinceSelect` 加 `aria-expanded`/`aria-haspopup`/`role="listbox"`/`role="option"`/`aria-selected`；步骤指示器 `aria-current="step"`；错误提示 `role="alert"`；申请进度条 `role="progressbar"` + `aria-valuenow/min/max`
+- **P3-A 个性化推荐**：`recommender.ts` 双算法——`recommendByUserProfile`（适用群体重叠 ×15、地域匹配 +8、学历匹配 +5、successCount 加权、补贴金额 +3）+ `recommendSimilarPolicies`（群体重叠、地域重叠、补贴类型相同、successCount 加权）；过滤低分项，每条推荐附 `reason` 字段；Report 页"你可能也关心"区块 + 政策详情页"相似政策"区块
+- **P3-B Web Vitals 监控**：`WebVitalsReporter` 组件使用 `useReportWebVitals` hook 收集 LCP/CLS/INP/FCP/TTFB 五大指标；开发环境 console.debug，生产环境通过 `navigator.sendBeacon` 上报到 `/api/track`（含 metricId/rating）
+- **P3-C 政策数据扩充**：联网检索官方来源，新增 7 条真实政策（总计 58 条）——①国务院办公厅《促进残疾人就业三年行动方案（2025—2027年）》国办发〔2025〕23号；②央行、金融监管总局、全国妇联《关于进一步加强金融支持妇女就业发展的实施意见》；③《广东省创业担保贷款实施办法》；④四川省《关于进一步稳定和扩大就业若干政策措施》川办发〔2024〕34号；⑤江苏省《江苏省就业补助资金管理办法》苏财规〔2025〕2号；⑥成都市《残疾人就业创业补贴实施意见》；⑦人力资源社会保障部《关于开展2026年全国公共就业招聘专项活动的通知》人社部函〔2026〕1号。每条政策附 `sourceUrl` 可溯源查证
+
 ## 技术栈
 
 - Next.js 16 + React 19 + TypeScript
@@ -64,6 +74,7 @@
 - framer-motion 动画库（V6 新增）
 - Vitest 单元测试（V6.1 新增）
 - Service Worker + Web App Manifest PWA（V6.1 新增）
+- html2canvas-pro + jsPDF 报告导出（V6.2 新增）
 
 ## 快速开始
 
@@ -116,7 +127,7 @@ npm start
 policylens/
 ├── public/
 │   ├── data/
-│   │   ├── policies.json    # 51 条结构化政策数据
+│   │   ├── policies.json    # 58 条结构化政策数据
 │   │   └── stats.json        # 宏观就业统计数据
 │   ├── manifest.webmanifest  # PWA 清单（V6.1）
 │   ├── sw.js                 # Service Worker（V6.1）
@@ -124,23 +135,34 @@ policylens/
 ├── src/
 │   ├── app/
 │   │   ├── api/
+│   │   │   ├── chat/        # AI 智能追问 SSE 接口（V6.2）
 │   │   │   ├── interpret/    # AI 解读 API（含限流/校验/去重）
 │   │   │   └── track/        # 数据埋点 API（V6.1）
 │   │   ├── landing/          # 介绍页（含独立 metadata）
+│   │   ├── policy/[id]/      # 政策详情独立路由 SSG（V6.2）
 │   │   ├── report/           # 报告页（含独立 metadata）
 │   │   ├── robots.ts         # robots.txt（V6.1）
-│   │   ├── sitemap.ts        # sitemap.xml（V6.1）
-│   │   └── layout.tsx        # 根布局（含 OG/JSON-LD/PWA 注册）
+│   │   ├── sitemap.ts        # sitemap.xml（V6.1，含政策详情页）
+│   │   └── layout.tsx        # 根布局（含 OG/JSON-LD/PWA 注册/SkipLink/WebVitals）
 │   ├── components/
 │   │   ├── Dashboard/        # 数据看板（next/dynamic 懒加载）
+│   │   ├── PolicyChat/       # AI 智能追问客户端（V6.2）
+│   │   ├── PolicyDetailTracker/ # 政策详情页埋点（V6.2）
 │   │   ├── PWA/              # Service Worker 注册器（V6.1）
 │   │   ├── ProfileForm/      # 用户画像表单（含埋点）
-│   │   └── Report/           # 匹配报告（含 React.memo + 埋点）
+│   │   ├── RecommendationSection/ # 个性化推荐区块（V6.2）
+│   │   ├── Report/           # 匹配报告（含 React.memo + 埋点）
+│   │   ├── ReportExportMenu/ # PDF/图片导出菜单（V6.2）
+│   │   ├── SkipLink/         # 无障碍跳过链接（V6.2）
+│   │   └── WebVitalsReporter/ # Web Vitals 监控（V6.2）
 │   ├── lib/
 │   │   ├── matcher/          # 匹配引擎（含 .test.ts 单元测试）
 │   │   ├── ai.ts             # AI 调用（含 7 天缓存）
 │   │   ├── analytics.ts      # 埋点客户端（V6.1）
+│   │   ├── data.server.ts    # 服务端数据加载（V6.2，SSG 用）
+│   │   ├── exportReport.ts   # 报告导出工具（V6.2）
 │   │   ├── rateLimit.ts      # IP 限流工具（V6.1）
+│   │   ├── recommender.ts    # 个性化推荐引擎（V6.2）
 │   │   ├── requestDedup.ts   # 请求去重工具（V6.1）
 │   │   └── store.ts          # Zustand 状态管理
 │   └── types/                # TypeScript 类型定义

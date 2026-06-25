@@ -94,13 +94,16 @@ function SearchableProvinceSelect({
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={`选择省份，当前${value || "未选择"}`}
         className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:outline-none text-left text-gray-900 flex items-center justify-between"
       >
         <span>{value || "请选择省份"}</span>
         <span className="text-gray-400 text-xs">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-60 overflow-hidden flex flex-col">
+        <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-60 overflow-hidden flex flex-col" role="listbox" aria-label="省份列表">
           <div className="p-2 border-b border-gray-100">
             <input
               type="text"
@@ -121,6 +124,8 @@ function SearchableProvinceSelect({
                 <button
                   key={p}
                   type="button"
+                  role="option"
+                  aria-selected={value === p}
                   onClick={() => {
                     onChange(p);
                     setOpen(false);
@@ -296,6 +301,8 @@ export default function ProfileForm() {
                   ? "bg-emerald-500 text-white"
                   : "bg-gray-200 text-gray-500"
               }`}
+              aria-current={currentStep === step ? "step" : undefined}
+              aria-label={`第 ${step + 1} 步${currentStep === step ? "（当前）" : currentStep > step ? "（已完成）" : ""}`}
             >
               {step + 1}
             </div>
@@ -340,7 +347,7 @@ export default function ProfileForm() {
                 ))}
               </div>
               {errors.identity && (
-                <p className="text-red-500 text-xs mt-2">{errors.identity}</p>
+                <p role="alert" className="text-red-500 text-xs mt-2">{errors.identity}</p>
               )}
             </div>
 
@@ -354,6 +361,7 @@ export default function ProfileForm() {
                     key={item}
                     type="button"
                     onClick={() => updateUserProfile({ education: item })}
+                    aria-pressed={userProfile.education === item}
                     className={`px-2 py-2.5 rounded-xl border-2 text-sm font-medium transition-all min-h-[44px] ${
                       userProfile.education === item
                         ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -365,7 +373,7 @@ export default function ProfileForm() {
                 ))}
               </div>
               {errors.education && (
-                <p className="text-red-500 text-xs mt-2">{errors.education}</p>
+                <p role="alert" className="text-red-500 text-xs mt-2">{errors.education}</p>
               )}
             </div>
 
@@ -381,6 +389,7 @@ export default function ProfileForm() {
                       key={year}
                       type="button"
                       onClick={() => updateUserProfile({ graduationYear: year })}
+                      aria-pressed={userProfile.graduationYear === year}
                       className={`px-2 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
                         userProfile.graduationYear === year
                           ? "border-blue-500 bg-blue-100 text-blue-700"
@@ -422,7 +431,7 @@ export default function ProfileForm() {
                 }
               />
               {errors.province && (
-                <p className="text-red-500 text-xs mt-2">{errors.province}</p>
+                <p role="alert" className="text-red-500 text-xs mt-2">{errors.province}</p>
               )}
             </div>
 
@@ -450,6 +459,7 @@ export default function ProfileForm() {
                     key={item}
                     type="button"
                     onClick={() => updateUserProfile({ employmentStatus: item })}
+                    aria-pressed={userProfile.employmentStatus === item}
                     className={`px-2 py-3 rounded-xl border-2 text-sm font-medium transition-all min-h-[44px] ${
                       userProfile.employmentStatus === item
                         ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -461,7 +471,7 @@ export default function ProfileForm() {
                 ))}
               </div>
               {errors.employmentStatus && (
-                <p className="text-red-500 text-xs mt-2">{errors.employmentStatus}</p>
+                <p role="alert" className="text-red-500 text-xs mt-2">{errors.employmentStatus}</p>
               )}
             </div>
 
@@ -523,6 +533,7 @@ export default function ProfileForm() {
                     key={item}
                     type="button"
                     onClick={() => updateUserProfile({ industryIntent: item })}
+                    aria-pressed={userProfile.industryIntent === item}
                     className={`px-2 py-3 rounded-xl border-2 text-sm font-medium transition-all min-h-[44px] ${
                       userProfile.industryIntent === item
                         ? "border-emerald-500 bg-emerald-50 text-emerald-700"

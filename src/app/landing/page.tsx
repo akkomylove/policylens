@@ -20,7 +20,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white outline-none">
       {/* 顶部导航 */}
       <nav className="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">

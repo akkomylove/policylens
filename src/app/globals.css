@@ -154,3 +154,28 @@ select {
     display: block !important;
   }
 }
+
+/* ============ V6.2：报告导出模式（html2canvas 截图前临时启用） ============ */
+body.exporting-report .no-export {
+  display: none !important;
+}
+
+/* 导出时强制展开所有折叠区域，确保导出内容完整 */
+body.exporting-report [data-policy-card] details,
+body.exporting-report details {
+  display: block !important;
+}
+
+/* 导出时去掉 sticky 定位，避免 html2canvas 截屏空白 */
+body.exporting-report .sticky {
+  position: static !important;
+}
+
+/* 导出时禁用所有动画，避免截图到中间帧 */
+body.exporting-report *,
+body.exporting-report *::before,
+body.exporting-report *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+}

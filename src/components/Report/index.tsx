@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3,
@@ -39,6 +40,7 @@ import {
   UserProfile,
   PolicyInterpretation,
   DifficultyLevel,
+  Policy,
 } from "@/types/policy";
 import {
   getMatchLevel,
@@ -56,12 +58,15 @@ import { useCountUp, formatNumber } from "@/lib/useCountUp";
 import { track } from "@/lib/analytics";
 import CompareModal from "./CompareModal";
 import ApplicationRoadmap from "./ApplicationRoadmap";
+import RecommendationSection from "@/components/RecommendationSection";
+import ReportExportMenu from "@/components/ReportExportMenu";
 
 interface ReportProps {
   matchedPolicies: MatchedPolicy[];
   userProfile: UserProfile;
   totalSubsidyEstimate: string;
   summary: string;
+  allPolicies?: Policy[];
 }
 
 // ============ 收藏持久化工具 ============
@@ -200,7 +205,14 @@ function ApplicationProgressBar({
   }
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100">
+    <div
+      className="mt-3 pt-3 border-t border-gray-100"
+      role="progressbar"
+      aria-valuenow={completedCount}
+      aria-valuemin={0}
+      aria-valuemax={4}
+      aria-label="申请进度"
+    >
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-gray-500">
           申请进度
@@ -783,6 +795,7 @@ function PolicyCard({
 
   return (
     <motion.div
+      data-policy-card
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3), ease: "easeOut" }}
@@ -904,7 +917,7 @@ function PolicyCard({
               {policy.agency} · {policy.publishDate}
             </p>
           </div>
-          <div className="ml-2 flex flex-col gap-1 flex-shrink-0">
+          <div className="no-export ml-2 flex flex-col gap-1 flex-shrink-0">
             <button
               onClick={onToggleFavorite}
               className="p-2 rounded-lg hover:bg-gray-50 transition-colors"
@@ -928,6 +941,14 @@ function PolicyCard({
             >
               {isInCompare ? <GitCompare size={16} /> : <TrendingUp size={16} />}
             </button>
+            <Link
+              href={`/policy/${policy.id}`}
+              className="p-2 rounded-lg hover:bg-gray-50 transition-colors print:hidden"
+              aria-label="查看政策详情页"
+              title="查看政策详情页"
+            >
+              <FileText size={16} className="text-gray-400" />
+            </Link>
           </div>
         </div>
 
@@ -1193,7 +1214,7 @@ function PolicyCard({
           <button
             onClick={onInterpret}
             disabled={isLoading}
-            className="w-full py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-600 text-sm font-medium hover:bg-emerald-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="no-export w-full py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-600 text-sm font-medium hover:bg-emerald-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -1210,7 +1231,7 @@ function PolicyCard({
         )}
 
         {/* V5：4 步申请进度条 + 原文链接 */}
-        <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="no-export mt-3 pt-3 border-t border-gray-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-gray-500">
               申请进度
@@ -1411,6 +1432,7 @@ export default function Report({
   userProfile,
   totalSubsidyEstimate,
   summary,
+  allPolicies,
 }: ReportProps) {
   const [interpretations, setInterpretations] = useState<
     Record<string, PolicyInterpretation>
@@ -1830,7 +1852,7 @@ export default function Report({
     : "";
 
   return (
-    <div className="space-y-5">
+    <div id="report-export-root" className="space-y-5">
       {/* 报告头部 */}
       <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -1845,14 +1867,19 @@ export default function Report({
           <div className="flex gap-2">
             <button
               onClick={handleShare}
-              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+              className="no-export px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
             >
               <Share2 size={12} />
               分享
             </button>
+            <ReportExportMenu
+              userSummary={`${userProfile.identity}·${userProfile.education}·${userProfile.province}·${userProfile.employmentStatus}`}
+              subsidyEstimate={totalSubsidyEstimate}
+              showToast={showToast}
+            />
             <button
               onClick={() => setShowChecklist(true)}
-              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+              className="no-export px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
             >
               <ClipboardList size={12} />
               导出清单
@@ -1933,7 +1960,7 @@ export default function Report({
       </div>
 
       {/* 批量解读按钮 */}
-      <div className="flex items-center gap-3">
+      <div className="no-export flex items-center gap-3">
         <button
           onClick={handleBatchInterpret}
           disabled={batchLoading}
@@ -1957,25 +1984,27 @@ export default function Report({
       </div>
 
       {/* 筛选工具栏 */}
-      <FilterToolbar
-        filterType={filterType}
-        setFilterType={setFilterType}
-        filterDifficulty={filterDifficulty}
-        setFilterDifficulty={setFilterDifficulty}
-        filterMatch={filterMatch}
-        setFilterMatch={setFilterMatch}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        showOnlyFavorited={showOnlyFavorited}
-        setShowOnlyFavorited={setShowOnlyFavorited}
-        showOnlyActive={showOnlyActive}
-        setShowOnlyActive={setShowOnlyActive}
-        totalCount={matchedPolicies.length}
-        filteredCount={filteredPolicies.length}
-        favoriteCount={favorites.size}
-      />
+      <div className="no-export">
+        <FilterToolbar
+          filterType={filterType}
+          setFilterType={setFilterType}
+          filterDifficulty={filterDifficulty}
+          setFilterDifficulty={setFilterDifficulty}
+          filterMatch={filterMatch}
+          setFilterMatch={setFilterMatch}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          showOnlyFavorited={showOnlyFavorited}
+          setShowOnlyFavorited={setShowOnlyFavorited}
+          showOnlyActive={showOnlyActive}
+          setShowOnlyActive={setShowOnlyActive}
+          totalCount={matchedPolicies.length}
+          filteredCount={filteredPolicies.length}
+          favoriteCount={favorites.size}
+        />
+      </div>
 
       {/* 政策列表 */}
       <div className="space-y-3">
@@ -2010,6 +2039,15 @@ export default function Report({
               compareDisabled={compareIds.size >= 3}
             />
           ))
+        )}
+
+        {/* V7 新增：个性化推荐 */}
+        {allPolicies && allPolicies.length > 0 && (
+          <RecommendationSection
+            allPolicies={allPolicies}
+            matchedPolicies={matchedPolicies}
+            userProfile={userProfile}
+          />
         )}
       </div>
 
@@ -2046,7 +2084,7 @@ export default function Report({
       {showBackToTop && (
         <button
           onClick={handleBackToTop}
-          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-emerald-500 text-white shadow-lg hover:bg-emerald-600 transition-all flex items-center justify-center print:hidden"
+          className="no-export fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-emerald-500 text-white shadow-lg hover:bg-emerald-600 transition-all flex items-center justify-center print:hidden"
           aria-label="返回顶部"
           title="返回顶部"
         >

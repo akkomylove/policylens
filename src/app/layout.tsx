@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import RegisterSW from "@/components/PWA/RegisterSW";
+import WebVitalsReporter from "@/components/WebVitalsReporter";
+import SkipLink from "@/components/SkipLink";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://policylens.vercel.app";
 
@@ -131,8 +133,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white text-gray-900">
+        <SkipLink />
         {children}
         <RegisterSW />
+        <WebVitalsReporter />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
