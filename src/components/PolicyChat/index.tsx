@@ -177,6 +177,8 @@ export default function PolicyChat({ policy }: { policy: Policy }) {
       {/* 输入区 */}
       <div className="flex gap-2">
         <input
+          id="policy-chat-input"
+          name="policy-chat-input"
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}

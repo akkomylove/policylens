@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -13,10 +13,14 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { trackPageView } from "@/lib/analytics";
+import { loadPolicies } from "@/lib/data";
 
 export default function LandingPage() {
+  const [policyCount, setPolicyCount] = useState(0);
+
   useEffect(() => {
     trackPageView("/landing");
+    loadPolicies().then((data) => setPolicyCount(data.length));
   }, []);
 
   return (
@@ -53,7 +57,7 @@ export default function LandingPage() {
             <span className="text-gradient">哪些就业政策补贴</span>
           </h1>
           <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-xl mx-auto">
-            填写简单画像，AI 帮你从 51 条政策中找到最适合你的，翻译成大白话，告诉你怎么申请。
+            填写简单画像，AI 帮你从 {policyCount || "多"} 条政策中找到最适合你的，翻译成大白话，告诉你怎么申请。
           </p>
           <Link
             href="/"
@@ -113,7 +117,7 @@ export default function LandingPage() {
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-600">51</div>
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-600">{policyCount || "—"}</div>
               <div className="text-xs text-gray-500 mt-1">条政策</div>
             </div>
             <div className="border-x border-gray-100">

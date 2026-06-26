@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
 
 /**
  * V4 新增：报告页错误边界
@@ -20,7 +21,9 @@ export default function Error({
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-md w-full text-center">
-        <div className="text-4xl mb-3">😵</div>
+        <div className="text-4xl mb-3 text-amber-500 flex justify-center">
+          <AlertTriangle size={32} />
+        </div>
         <h2 className="text-lg font-bold text-gray-900 mb-2">
           报告页出错了
         </h2>

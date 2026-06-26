@@ -6,6 +6,7 @@ import {
   extractSubsidyAmount,
 } from "@/lib/matcher/scoreCalculator";
 import { getEffectiveStatusInfo } from "@/lib/effectiveStatus";
+import { BarChart3, X, Check } from "lucide-react";
 
 interface CompareModalProps {
   policies: MatchedPolicy[];
@@ -29,7 +30,7 @@ export default function CompareModal({
           className="bg-white rounded-2xl max-w-md w-full p-6 text-center"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="text-4xl mb-3">📊</div>
+          <div className="text-4xl mb-3 text-gray-300 flex justify-center"><BarChart3 size={32} /></div>
           <h2 className="text-lg font-bold text-gray-900 mb-2">
             至少选择 2 条政策
           </h2>
@@ -139,7 +140,10 @@ export default function CompareModal({
         {/* 头部 */}
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">📊 政策对比</h2>
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <BarChart3 size={18} className="text-emerald-600" />
+              政策对比
+            </h2>
             <p className="text-xs text-gray-500 mt-1">
               对比 {policies.length} 条政策，绿色高亮为该维度最优
             </p>
@@ -147,8 +151,9 @@ export default function CompareModal({
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 text-gray-400"
+            aria-label="关闭"
           >
-            ✕
+            <X size={18} />
           </button>
         </div>
 
@@ -175,10 +180,10 @@ export default function CompareModal({
                       </div>
                       <button
                         onClick={() => onRemove(p.id)}
-                        className="text-gray-300 hover:text-red-500 text-xs"
+                        className="text-gray-300 hover:text-red-500"
                         aria-label="移除"
                       >
-                        ✕
+                        <X size={14} />
                       </button>
                     </div>
                   </th>
@@ -209,7 +214,7 @@ export default function CompareModal({
                       >
                         {dim.getValue(p)}
                         {isBest && (
-                          <span className="ml-1 text-xs">✓</span>
+                          <Check size={12} className="ml-1 inline-block text-emerald-600" />
                         )}
                       </td>
                     );

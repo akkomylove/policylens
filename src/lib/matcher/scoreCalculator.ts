@@ -224,14 +224,13 @@ export function getDifficultyInfo(difficulty: DifficultyLevel): {
   label: string;
   color: string;
   bgColor: string;
-  icon: string;
 } {
   switch (difficulty) {
     case "easy":
-      return { label: "易申请", color: "#10b981", bgColor: "#d1fae5", icon: "✓" };
+      return { label: "易申请", color: "#10b981", bgColor: "#d1fae5" };
     case "medium":
-      return { label: "中等", color: "#f59e0b", bgColor: "#fef3c7", icon: "≈" };
+      return { label: "中等", color: "#f59e0b", bgColor: "#fef3c7" };
     case "hard":
-      return { label: "较复杂", color: "#ef4444", bgColor: "#fee2e2", icon: "!" };
+      return { label: "较复杂", color: "#ef4444", bgColor: "#fee2e2" };
   }
 }

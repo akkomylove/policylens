@@ -51,15 +51,14 @@ export function getEffectiveStatusInfo(status: "active" | "expiring" | "expired"
   label: string;
   color: string;
   bgColor: string;
-  icon: string;
 } {
   switch (status) {
     case "active":
-      return { label: "申报中", color: "#10b981", bgColor: "#d1fae5", icon: "✓" };
+      return { label: "申报中", color: "#10b981", bgColor: "#d1fae5" };
     case "expiring":
-      return { label: "即将截止", color: "#f59e0b", bgColor: "#fef3c7", icon: "⏰" };
+      return { label: "即将截止", color: "#f59e0b", bgColor: "#fef3c7" };
     case "expired":
-      return { label: "已过期", color: "#9ca3af", bgColor: "#f3f4f6", icon: "✕" };
+      return { label: "已过期", color: "#9ca3af", bgColor: "#f3f4f6" };
   }
 }
 

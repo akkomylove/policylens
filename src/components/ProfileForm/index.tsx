@@ -106,6 +106,8 @@ function SearchableProvinceSelect({
         <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-60 overflow-hidden flex flex-col" role="listbox" aria-label="省份列表">
           <div className="p-2 border-b border-gray-100">
             <input
+              id="province-search"
+              name="province-search"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -181,6 +183,8 @@ function CitySelect({
   if (!province) {
     return (
       <select
+        id="city"
+        name="city"
         disabled
         className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400"
       >
@@ -191,6 +195,8 @@ function CitySelect({
 
   return (
     <select
+      id="city"
+      name="city"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       disabled={loading}
@@ -214,6 +220,7 @@ function NumberInput({
   min,
   max,
   suffix,
+  id,
 }: {
   value: number | undefined;
   onChange: (value: number | undefined) => void;
@@ -221,10 +228,13 @@ function NumberInput({
   min?: number;
   max?: number;
   suffix?: string;
+  id?: string;
 }) {
   return (
     <div className="relative">
       <input
+        id={id}
+        name={id}
         type="number"
         value={value ?? ""}
         onChange={(e) => {
@@ -402,8 +412,8 @@ export default function ProfileForm() {
                 </div>
                 <p className="text-xs text-blue-500 mt-2">
                   {userProfile.identity === "应届毕业生"
-                    ? "💡 应届毕业生默认满足「毕业2年内」条件，填写年份可获得更精准的资格窗口期预警"
-                    : "💡 往届毕业生请填写实际毕业年份，用于判断是否仍在资格窗口期内"}
+                    ? "应届毕业生默认满足「毕业2年内」条件，填写年份可获得更精准的资格窗口期预警"
+                    : "往届毕业生请填写实际毕业年份，用于判断是否仍在资格窗口期内"}
                 </p>
               </div>
             )}
@@ -486,10 +496,11 @@ export default function ProfileForm() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-amber-700 mb-1.5">
+                  <label htmlFor="age" className="block text-xs font-medium text-amber-700 mb-1.5">
                     年龄
                   </label>
                   <NumberInput
+                    id="age"
                     value={userProfile.age}
                     onChange={(age) => updateUserProfile({ age })}
                     placeholder="如 25"
@@ -499,10 +510,11 @@ export default function ProfileForm() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-amber-700 mb-1.5">
+                  <label htmlFor="social-security-months" className="block text-xs font-medium text-amber-700 mb-1.5">
                     社保缴纳月数
                   </label>
                   <NumberInput
+                    id="social-security-months"
                     value={userProfile.socialSecurityMonths}
                     onChange={(socialSecurityMonths) => updateUserProfile({ socialSecurityMonths })}
                     placeholder="如 12"

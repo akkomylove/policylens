@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Flame, CheckCircle, Map as MapIcon, Circle } from "lucide-react";
 import { MatchedPolicy, PolicyInterpretation, DifficultyLevel } from "@/types/policy";
 import { extractSubsidyAmount, getDifficultyInfo } from "@/lib/matcher/scoreCalculator";
 
@@ -10,11 +11,13 @@ interface ApplicationRoadmapProps {
   onPolicyClick?: (policyId: string) => void;
 }
 
+type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
+
 // 优先级信息映射
-const priorityInfo: Record<string, { label: string; color: string; bgColor: string; icon: string }> = {
-  strong: { label: "强烈推荐", color: "#10b981", bgColor: "#d1fae5", icon: "🔥" },
-  normal: { label: "推荐", color: "#f59e0b", bgColor: "#fef3c7", icon: "✓" },
-  optional: { label: "可选", color: "#9ca3af", bgColor: "#f3f4f6", icon: "○" },
+const priorityInfo: Record<string, { label: string; color: string; bgColor: string; icon: LucideIcon }> = {
+  strong: { label: "强烈推荐", color: "#10b981", bgColor: "#d1fae5", icon: Flame },
+  normal: { label: "推荐", color: "#f59e0b", bgColor: "#fef3c7", icon: CheckCircle },
+  optional: { label: "可选", color: "#9ca3af", bgColor: "#f3f4f6", icon: Circle },
 };
 
 // 单步卡片
@@ -70,7 +73,7 @@ function RoadmapStep({
               >
                 <div className="flex items-start gap-2 mb-1.5">
                   {pInfo && (
-                    <span className="text-xs">{pInfo.icon}</span>
+                    <pInfo.icon size={12} className="mt-0.5 shrink-0" />
                   )}
                   <h4 className="text-xs font-semibold text-gray-900 flex-1 leading-snug line-clamp-2">
                     {policy.title}
@@ -152,7 +155,8 @@ export default function ApplicationRoadmap({
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            🗺️ 你的申请路线图
+            <MapIcon size={18} className="text-emerald-600" />
+            你的申请路线图
           </h2>
           <p className="text-xs text-gray-500 mt-1">
             按「先易后难 + 先高补贴」排序，分 3 步走，逐步落地

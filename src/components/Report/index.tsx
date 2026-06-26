@@ -34,6 +34,7 @@ import {
   GraduationCap,
   Info,
   Phone,
+  X,
 } from "lucide-react";
 import {
   MatchedPolicy,
@@ -438,10 +439,13 @@ function FilterToolbar({
         <div className="flex-1 relative min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
+            id="policy-search"
+            name="policy-search"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="搜索政策标题或内容..."
+            aria-label="搜索政策"
             className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:border-emerald-500"
           />
         </div>
@@ -472,6 +476,9 @@ function FilterToolbar({
       {/* 筛选+排序 */}
       <div className="flex flex-wrap gap-2">
         <select
+          id="filter-type"
+          name="filter-type"
+          aria-label="按类型筛选"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as FilterType)}
           className={selectClass}
@@ -484,6 +491,9 @@ function FilterToolbar({
         </select>
 
         <select
+          id="filter-difficulty"
+          name="filter-difficulty"
+          aria-label="按难度筛选"
           value={filterDifficulty}
           onChange={(e) =>
             setFilterDifficulty(e.target.value as FilterDifficulty)
@@ -497,6 +507,9 @@ function FilterToolbar({
         </select>
 
         <select
+          id="filter-match"
+          name="filter-match"
+          aria-label="按匹配度筛选"
           value={filterMatch}
           onChange={(e) => setFilterMatch(e.target.value as FilterMatch)}
           className={selectClass}
@@ -508,6 +521,9 @@ function FilterToolbar({
         </select>
 
         <select
+          id="sort-by"
+          name="sort-by"
+          aria-label="排序方式"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortBy)}
           className={selectClass}
@@ -986,7 +1002,7 @@ function PolicyCard({
                       title={item.reason}
                     >
                       {DIM_LABELS[dim] || dim}
-                      {item.hit ? <CheckCircle size={10} /> : <span className="text-2xs">✕</span>}
+                      {item.hit ? <CheckCircle size={10} /> : <X size={10} className="text-gray-300" />}
                     </div>
                   ))}
                 </div>
@@ -1338,8 +1354,9 @@ function ChecklistModal({
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 text-gray-400"
+            aria-label="关闭"
           >
-            <span className="text-xl">✕</span>
+            <X size={20} />
           </button>
         </div>
 

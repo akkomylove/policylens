@@ -2,6 +2,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  BarChart3,
+  Flame,
+  CheckCircle,
+  Target,
+  PieChart,
+  TrendingUp,
+  Map as MapIcon,
+  Wallet,
+  Users,
+  ClipboardList,
+  Clock,
+} from "lucide-react";
+import {
   MatchedPolicy,
   Policy,
   StatsData,
@@ -54,7 +67,7 @@ function ProfileSummaryCard({
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
-            📊 你的政策画像
+            <BarChart3 size={18} className="inline-block" /> 你的政策画像
           </h2>
           <p className="text-sm text-emerald-100 mt-1">
             {userProfile?.identity}·{userProfile?.education}·{userProfile?.province}
@@ -75,8 +88,8 @@ function ProfileSummaryCard({
             <div style={{ width: `${optionalPct}%` }} className="bg-gray-300" />
           </div>
           <div className="flex gap-4 text-xs flex-wrap">
-            <span>🔥 强烈推荐 {priorityCounts.strong}</span>
-            <span>✓ 推荐 {priorityCounts.normal}</span>
+            <span><Flame size={14} className="inline-block" /> 强烈推荐 {priorityCounts.strong}</span>
+            <span><CheckCircle size={14} className="inline-block" /> 推荐 {priorityCounts.normal}</span>
             <span>○ 可选 {priorityCounts.optional}</span>
           </div>
         </>
@@ -157,7 +170,7 @@ function MatchRadarChart({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-        🎯 匹配维度雷达
+        <Target size={18} className="inline-block" /> 匹配维度雷达
       </h3>
       <p className="text-xs text-gray-500 mb-3">
         Top3 政策在 5 个维度的匹配得分对比
@@ -248,7 +261,7 @@ function SubsidyTypePieChart({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-        🥧 补贴类型分布
+        <PieChart size={18} className="inline-block" /> 补贴类型分布
       </h3>
       <p className="text-xs text-gray-500 mb-3">
         匹配政策按补贴类型分组占比
@@ -353,7 +366,7 @@ function SubsidyBarChart({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-          💹 补贴金额 Top10
+          <TrendingUp size={18} className="inline-block" /> 补贴金额 Top10
         </h3>
         <button
           onClick={handleClick}
@@ -445,7 +458,7 @@ function RoadmapPreviewCard({
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            🗺️ 申请路线图
+            <MapIcon size={18} className="inline-block" /> 申请路线图
           </h2>
           <p className="text-xs text-gray-500 mt-1">
             按「先易后难 + 先高补贴」排序，分 3 步走
@@ -566,7 +579,7 @@ function SubsidyEstimateCard({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
-        💰 补贴预估
+        <Wallet size={18} className="inline-block" /> 补贴预估
       </h3>
       <div className="text-3xl font-bold text-amber-600">
         {data.totalAmount.toFixed(1)}
@@ -635,13 +648,13 @@ function ExpiringSoonCard({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-orange-200 p-5">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-orange-500 text-lg">⏰</span>
+        <Clock size={18} className="text-orange-500" />
         <h3 className="text-base font-bold text-gray-900">即将截止提醒</h3>
       </div>
 
       {expiring.length === 0 ? (
         <div className="text-center py-8">
-          <div className="text-3xl mb-2">✓</div>
+          <div className="text-3xl mb-2"><CheckCircle size={32} /></div>
           <p className="text-sm text-gray-400">暂无即将截止的政策</p>
           <p className="text-xs text-gray-400 mt-1">所有政策申报期充足</p>
         </div>
@@ -720,7 +733,7 @@ function PeerReferenceCard({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">👥</span>
+        <span className="text-lg"><Users size={20} /></span>
         <h3 className="text-base font-bold text-gray-900">同类用户参考</h3>
       </div>
       <p className="text-xs text-gray-500 mb-3">
@@ -729,7 +742,7 @@ function PeerReferenceCard({
 
       {topApplied.length === 0 ? (
         <div className="text-center py-8">
-          <div className="text-3xl mb-2">📊</div>
+          <div className="text-3xl mb-2"><BarChart3 size={32} /></div>
           <p className="text-sm text-gray-400">暂无同类用户数据</p>
         </div>
       ) : (
@@ -809,7 +822,7 @@ function MacroPersonalizedCard({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
       <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
-        📈 宏观背景与你的关系
+        <TrendingUp size={18} className="inline-block" /> 宏观背景与你的关系
       </h3>
       <p className="text-sm text-gray-700 leading-relaxed">
         {identityInsight}
@@ -858,7 +871,7 @@ function DataSourceModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-          📊 数据说明
+          <BarChart3 size={18} className="inline-block" /> 数据说明
         </h3>
         <div className="space-y-2 text-sm text-gray-600 leading-relaxed">
           <p>• 政策数据：来源于国务院、各省人社厅公开发布的政策文件</p>
@@ -902,7 +915,7 @@ export default function Dashboard({
   if (matchedPolicies.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-        <div className="text-4xl mb-3">📋</div>
+        <div className="text-4xl mb-3"><ClipboardList size={32} /></div>
         <p className="text-sm text-gray-500 mb-1">暂无匹配数据</p>
         <p className="text-xs text-gray-400">请先完成画像填写，生成匹配报告</p>
       </div>
@@ -961,7 +974,7 @@ export default function Dashboard({
           onClick={() => setShowDataSource(true)}
           className="text-xs text-gray-400 hover:text-gray-600 underline"
         >
-          📊 数据说明
+          <BarChart3 size={18} className="inline-block" /> 数据说明
         </button>
       </div>
 

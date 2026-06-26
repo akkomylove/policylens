@@ -320,8 +320,11 @@ export default async function PolicyDetailPage({
                           {reason}
                         </span>
                         {recPolicy.subsidyAmount && (
-                          <span className="px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-2xs">
-                            {recPolicy.subsidyAmount.slice(0, 20)}
+                          <span
+                            className="inline-block max-w-[200px] truncate px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-2xs"
+                            title={recPolicy.subsidyAmount}
+                          >
+                            {recPolicy.subsidyAmount}
                           </span>
                         )}
                       </div>
