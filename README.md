@@ -1,116 +1,62 @@
 # PolicyLens · 就业政策智能解读器
 
-> TRAE AI 创造力大赛参赛作品 · 社会服务赛道 + 社会公益附加赛道
+> TRAE AI 创造力大赛参赛作品 · 社会服务赛道 + 社会公益附加赛道  
+> 填写你的画像，3 分钟知道你能享受哪些就业政策补贴。
 
-填写你的画像，3 分钟知道你能享受哪些就业政策补贴。AI 智能匹配 + 大白话解读 + 可视化看板。
+<!-- 这里放项目截图或演示GIF -->
 
-## 功能特性
+## 核心能力
 
-- **政策匹配**：基于身份/学历/地域/就业状态/行业的 5 维度规则匹配引擎，分层推荐（强烈/推荐/可选）
-- **AI 解读**：调用智谱 GLM-4.7-Flash 模型，把晦涩政策翻译成大白话，输出 10 个结构化字段（为什么是你/为什么现在/能拿什么/申请材料/办理地点/咨询电话/申请步骤等），含降级方案和 7 天缓存
-- **数据看板**：3 个 ECharts 图表（补贴金额 Top10 柱状图/5 维度匹配雷达图/补贴类型分布饼图）+ 6 张决策卡片（画像总览/申请路线图/补贴预估/即将截止/同类用户/宏观背景）
-- **政策卡片**：4 大实用性功能（申请材料清单/办理地点+联系方式/申请时限倒计时/同类用户反馈），标签精简为 4 核心+折叠
-- **58 条政策**：覆盖 31 个省份，含国务院、人社部及各省市政策，含申报截止日期和同类用户申请数
-- **体验打磨**：返回顶部按钮、打印样式、Tab 状态 URL 持久化、表单草稿持久化、AI 解读骨架屏、错误边界兜底
+| 能力 | 说明 |
+|------|------|
+| **智能匹配** | 基于身份/学历/地域/就业状态/行业的 5 维度规则引擎，覆盖 31 省 58 条真实政策 |
+| **AI 解读** | 智谱 GLM-4.7-Flash 模型将晦涩政策翻译为 10 个结构化字段（申请材料/办理地点/步骤等） |
+| **数据看板** | ECharts 可视化（补贴金额 Top10 / 匹配雷达图 / 类型分布饼图）+ 6 张决策卡片 |
+| **行动闭环** | 官方申报入口直达 + 4 步申请进度跟踪 + 资格窗口期倒计时预警 |
+| **精准匹配** | 原子条件(AtomicCondition)拆解 + 语义近似映射 + "还差 N 个条件"进度提示 |
 
-### V5 新增：精准匹配 + 行动闭环
+## 技术亮点
 
-- **政策要素颗粒化**：将政策条件拆解为原子条件（AtomicCondition），支持身份/年龄/学历/地域/状态/行业/社保/毕业年份等 10 类维度，精确评估每个条件的满足情况
-- **"差几条"提示**：在政策卡片上直观展示"还差 N 个可选条件"+ 进度条（核心条件/全部条件），可展开查看未满足条件清单，让用户知道"为什么是我"和"还差什么"
-- **语义近似匹配**：内置语义别名映射（SEMANTIC_ALIASES），处理"自主创业"vs"个体经营"、"应届"vs"毕业年度"等近义表达，避免因表述差异漏匹配
-- **官方申报入口直达**：每条政策配备 `applyUrl`，一键跳转官方申报平台（主要指向 si.12333.gov.cn），消除"找到政策却找不到入口"的断点
-- **办理地点地图可视化**：集成高德地图 iframe（无需 API Key），点击"查看地图"即可查看办理地点位置
-- **资格窗口期预警**：基于用户毕业年份计算资格窗口期（应届 2 年/往届 5 年），在政策卡片头部显示倒计时徽章（红色/橙色/绿色三级 urgency）
-- **4 步申请进度跟踪**：将申请流程拆解为"材料→提交→审核→领取"4 步进度条，点击标记完成，按顺序推进，进度持久化到 localStorage，跨会话保留
-- **防骗警示**：在官方申报入口旁显示黄色警示卡片，提醒用户"任何收费代办、承诺包过均为骗局"
-
-### V5.1 新增：画像表单细分扩展
-
-- **身份类型扩展**：从 8 种扩展到 13 种，新增创业者、企业职工、就业困难人员、残疾人、返乡入乡人员，覆盖政策数据中全部适用群体
-- **就业状态扩展**：从 4 种扩展到 6 种，新增灵活就业、退休
-- **行业意向扩展**：从 8 种扩展到 12 种，新增建筑业、文化产业、科技研发、电商物流
-- **毕业年份字段**：仅应届/往届毕业生显示，提供近 5 年快捷选项，用于精准判断资格窗口期
-- **年龄字段**：数字输入框（16-70 岁），用于匹配有年龄限制的政策
-- **社保缴纳月数字段**：数字输入框（0-480 月），用于匹配有社保要求的政策
-- **应届生误判修复**：修复"应届毕业生"被误判为不满足"毕业2年内应届生"条件的 bug，现在应届生身份自动满足此类条件
-
-### V6 新增：UI/UX 全面升级
-
-- **矢量图标系统**：引入 lucide-react 图标库，全局替换 30+ 处 emoji 为统一的矢量图标（BarChart3/Wallet/Target/CheckCircle/FileText 等），视觉风格统一，支持 size/color/fill 精细控制
-- **设计 Token 体系**：在 globals.css 中建立 CSS 变量系统（品牌色/语义色/阴影层级/圆角/字号），新增工具类（.text-2xs/.card-hover/.btn-press/.text-gradient）和 focus-visible 键盘导航环
-- **渐进式披露**：政策卡片新增"查看匹配详情"折叠区，默认收起匹配维度可视化/条件差距展示/同类用户反馈，降低初始信息密度，点击展开查看完整匹配详情
-- **framer-motion 动效**：政策卡片 stagger 入场动画（opacity+y 位移，delay 随 index 递增），KPI 卡片入场动画，折叠区高度动画，提升视觉流畅度
-- **数字 count-up 动画**：KPI 卡片数字和补贴总额使用 requestAnimationFrame + easeOutCubic 缓动动画，从 0 渐进到目标值，增强数据感知
-- **独立介绍页**：新增 `/landing` 路由，用户导向的简化介绍页（Hero+3 步说明+数据亮点+功能亮点+CTA），首页顶部添加返回介绍页入口
-- **移动端可读性优化**：将 17 处 text-[10px] 替换为 text-2xs（11px），提升移动端辅助文字可读性
-
-### V6.1 新增：安全 + 可靠性 + 可发现性 + 性能六项强化
-
-- **AI API 限流与输入校验**：基于 IP 的内存限流（10 次/分钟，滑动窗口 + 定期清理），输入字段类型/长度校验（policy.id/title/content，userProfile.identity/education/province），同 policyId 并发请求合并去重（dedupeRequest），限流返回 429 + Retry-After 头
-- **匹配引擎单元测试**：Vitest + 94 个测试用例覆盖三大核心模块——`extractSubsidyAmount`（19 用例，覆盖 7 种金额格式+边界条件+千位分隔符+多金额累加）、`evaluateAtomicConditions`（25 用例，覆盖 8 种 operator + 学历等级 + 毕业年份特殊逻辑 + gap 提示）、`matchPolicy/matchAllPolicies`（18 用例，覆盖 5 维度匹配+优先级排序+边界用例）。同时修复了 `extractSubsidyAmount` 范围匹配后未调用 markRange 导致单值重复累加的 bug
-- **PWA 离线能力**：Service Worker（`/sw.js`）三层缓存策略——policies.json/cities.json/stats.json cache-first、Next.js 静态资源 cache-first、页面导航 stale-while-revalidate、API 调用 network-only；Web App Manifest（`/manifest.webmanifest`）含应用名/主题色/图标/快捷方式；客户端注册器仅在生产环境激活
-- **SEO 与社交分享**：动态 sitemap.xml + robots.txt（自动生成路由）；Open Graph + Twitter Card 元数据（首页/介绍页/报告页独立 metadata，含 canonical URL）；JSON-LD 结构化数据（WebApplication + Organization schema，含 featureList 和 offers）；metadataBase 配置便于相对路径解析
-- **基础数据埋点**：轻量自托管方案（`/api/track` 接口 + 内存存储 + GET 统计查询），客户端使用 navigator.sendBeacon 不阻塞页面卸载；5 类关键事件——page_view（页面访问）、profile_submit（画像提交，含匿名画像字段）、match_complete（匹配完成，含匹配数和最高优先级）、interpret_request（AI 解读请求，含 policyId 和 priority）、share_click（分享点击）
-- **性能优化**：Dashboard 组件使用 `next/dynamic` 懒加载（ECharts ~400KB 仅在用户切到"数据看板"Tab 时加载）；KpiCard 和 SubsidyDisplay 使用 `React.memo` 包装避免父组件 re-render 时重复渲染（props 为稳定原始值）
-
-### V6.2 新增：用户体验与可发现性七项强化
-
-- **P2-A 政策详情独立路由**：SSG 预渲染 58 个 `/policy/[id]` 静态页（`generateStaticParams` + `dynamicParams = false`），每条政策独立 SEO、独立分享链接、独立 OG/Twitter Card metadata；含 JSON-LD `GovernmentService` 结构化数据，截止日期倒计时、政策原文、申请条件、官方入口（防骗警示）、相似政策推荐
-- **P2-B 报告导出 PDF/图片**：基于 `html2canvas-pro`（兼容 Tailwind v4 oklch 颜色）+ `jsPDF`，支持导出为 PNG 图片（适合微信分享）或 A4 多页 PDF（可打印）；导出时通过 CSS `.exporting-report` 模式自动隐藏交互元素（按钮/筛选/返回顶部等）、展开折叠区、禁用动画；底部绘制水印页脚（用户画像摘要/补贴预估/生成时间/免责声明）；导出按钮使用动态 `import()` 减小首屏 bundle
-- **P2-C AI 智能追问**：`/api/chat` SSE 流式接口（GLM-4.7-Flash `stream: true`），支持基于政策上下文的多轮追问；客户端 `PolicyChat` 组件使用 `ReadableStream` reader 实时增量渲染、`AbortController` 支持取消、4 个快捷建议问题、错误降级到 12333 咨询；含 IP 限流（10 次/分）和输入校验（question ≤500 字）
-- **P2-F 无障碍 a11y 强化**：`SkipLink` 跳过到主内容（`sr-only focus:not-sr-only` 模式）；`main` 标签 `id="main-content" tabIndex={-1}`；按钮组（identity/education/graduationYear/employmentStatus/industryIntent）全部加 `aria-pressed`；`SearchableProvinceSelect` 加 `aria-expanded`/`aria-haspopup`/`role="listbox"`/`role="option"`/`aria-selected`；步骤指示器 `aria-current="step"`；错误提示 `role="alert"`；申请进度条 `role="progressbar"` + `aria-valuenow/min/max`
-- **P3-A 个性化推荐**：`recommender.ts` 双算法——`recommendByUserProfile`（适用群体重叠 ×15、地域匹配 +8、学历匹配 +5、successCount 加权、补贴金额 +3）+ `recommendSimilarPolicies`（群体重叠、地域重叠、补贴类型相同、successCount 加权）；过滤低分项，每条推荐附 `reason` 字段；Report 页"你可能也关心"区块 + 政策详情页"相似政策"区块
-- **P3-B Web Vitals 监控**：`WebVitalsReporter` 组件使用 `useReportWebVitals` hook 收集 LCP/CLS/INP/FCP/TTFB 五大指标；开发环境 console.debug，生产环境通过 `navigator.sendBeacon` 上报到 `/api/track`（含 metricId/rating）
-- **P3-C 政策数据扩充**：联网检索官方来源，新增 7 条真实政策（总计 58 条）——①国务院办公厅《促进残疾人就业三年行动方案（2025—2027年）》国办发〔2025〕23号；②央行、金融监管总局、全国妇联《关于进一步加强金融支持妇女就业发展的实施意见》；③《广东省创业担保贷款实施办法》；④四川省《关于进一步稳定和扩大就业若干政策措施》川办发〔2024〕34号；⑤江苏省《江苏省就业补助资金管理办法》苏财规〔2025〕2号；⑥成都市《残疾人就业创业补贴实施意见》；⑦人力资源社会保障部《关于开展2026年全国公共就业招聘专项活动的通知》人社部函〔2026〕1号。每条政策附 `sourceUrl` 可溯源查证
+- **匹配引擎**：10 类原子条件（身份/年龄/学历/地域/状态/行业/社保/毕业年份等），94 个 Vitest 单元测试覆盖核心逻辑
+- **性能优化**：Dashboard `next/dynamic` 懒加载（ECharts ~400KB 按需加载），KPI 卡片 `React.memo` 避免重复渲染
+- **可发现性**：SSG 预渲染 58 个 `/policy/[id]` 详情页；动态 sitemap + OG/Twitter Card + JSON-LD 结构化数据
+- **可靠性**：Service Worker 三层缓存策略（PWA 离线可用）；IP 限流 + 输入校验 + 并发请求去重
+- **报告导出**：html2canvas-pro + jsPDF 支持 PNG 图片分享 / A4 PDF 打印
 
 ## 技术栈
 
-- Next.js 16 + React 19 + TypeScript
-- Tailwind CSS 4
-- Zustand 状态管理（含 persist 中间件）
-- ECharts 6 数据可视化
-- 智谱 GLM-4.7-Flash AI 模型
-- lucide-react 矢量图标库（V6 新增）
-- framer-motion 动画库（V6 新增）
-- Vitest 单元测试（V6.1 新增）
-- Service Worker + Web App Manifest PWA（V6.1 新增）
-- html2canvas-pro + jsPDF 报告导出（V6.2 新增）
+- **框架**：Next.js 16 + React 19 + TypeScript
+- **样式**：Tailwind CSS 4
+- **状态**：Zustand（含 persist 中间件）
+- **可视化**：ECharts 6
+- **AI**：智谱 GLM-4.7-Flash
+- **图标/动画**：lucide-react + framer-motion
+- **测试**：Vitest（94 用例）
+- **PWA**：Service Worker + Web App Manifest
+- **导出**：html2canvas-pro + jsPDF
 
 ## 快速开始
 
-### 1. 安装依赖
-
 ```bash
+# 1. 克隆仓库
+git clone https://github.com/akkomylove/policylens.git
+cd policylens
+
+# 2. 安装依赖
 npm install
-```
 
-### 2. 配置 AI API Key（重要）
+# 3. 配置 AI API Key
+cp .env.example .env.local
+# 填入你的智谱 API Key：GLM_API_KEY=your_api_key_here
 
-本项目使用智谱 AI 的 GLM 模型进行政策解读。**未配置 API Key 时，AI 解读功能将无法使用**（政策匹配和数据看板不受影响）。
-
-1. 前往 [智谱 AI 开放平台](https://open.bigmodel.cn/) 注册并获取 API Key
-2. 复制 `.env.example` 为 `.env.local`
-3. 填入你的 API Key：
-
-```bash
-GLM_API_KEY=your_api_key_here
-```
-
-### 3. 启动开发服务器
-
-```bash
+# 4. 启动开发服务器
 npm run dev
+# 打开 http://localhost:3000
 ```
 
-或使用一键启动脚本（Windows）：
+> 未配置 API Key 时，AI 解读功能不可用，政策匹配和数据看板不受影响。
 
-```bash
-start.bat
-```
-
-打开 [http://localhost:3000](http://localhost:3000) 查看效果。
-
-### 4. 构建生产版本
+## 构建生产版本
 
 ```bash
 npm run build
@@ -119,57 +65,55 @@ npm start
 
 ## 部署
 
-推荐使用 [Vercel](https://vercel.com/) 部署，部署时在环境变量中配置 `GLM_API_KEY`。
+推荐使用 [Vercel](https://vercel.com) 部署，环境变量中配置 `GLM_API_KEY`。
 
 ## 项目结构
 
-```
+```text
 policylens/
 ├── public/
 │   ├── data/
-│   │   ├── policies.json    # 58 条结构化政策数据
-│   │   └── stats.json        # 宏观就业统计数据
-│   ├── manifest.webmanifest  # PWA 清单（V6.1）
-│   ├── sw.js                 # Service Worker（V6.1）
-│   └── icon.svg              # 应用图标（V6.1）
+│   │   ├── policies.json       # 58 条结构化政策数据
+│   │   └── stats.json          # 宏观就业统计数据
+│   ├── manifest.webmanifest    # PWA 清单
+│   ├── sw.js                   # Service Worker
+│   └── icon.svg
 ├── src/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── chat/        # AI 智能追问 SSE 接口（V6.2）
-│   │   │   ├── interpret/    # AI 解读 API（含限流/校验/去重）
-│   │   │   └── track/        # 数据埋点 API（V6.1）
-│   │   ├── landing/          # 介绍页（含独立 metadata）
-│   │   ├── policy/[id]/      # 政策详情独立路由 SSG（V6.2）
-│   │   ├── report/           # 报告页（含独立 metadata）
-│   │   ├── robots.ts         # robots.txt（V6.1）
-│   │   ├── sitemap.ts        # sitemap.xml（V6.1，含政策详情页）
-│   │   └── layout.tsx        # 根布局（含 OG/JSON-LD/PWA 注册/SkipLink/WebVitals）
+│   │   │   ├── chat/           # AI 智能追问 SSE 接口
+│   │   │   ├── interpret/      # AI 解读 API（限流/校验/去重）
+│   │   │   └── track/          # 数据埋点 API
+│   │   ├── landing/            # 介绍页
+│   │   ├── policy/[id]/        # 政策详情 SSG 页
+│   │   ├── report/             # 匹配报告页
+│   │   ├── robots.ts           # robots.txt
+│   │   ├── sitemap.ts          # sitemap.xml
+│   │   └── layout.tsx          # 根布局（OG/JSON-LD/PWA 注册）
 │   ├── components/
-│   │   ├── Dashboard/        # 数据看板（next/dynamic 懒加载）
-│   │   ├── PolicyChat/       # AI 智能追问客户端（V6.2）
-│   │   ├── PolicyDetailTracker/ # 政策详情页埋点（V6.2）
-│   │   ├── PWA/              # Service Worker 注册器（V6.1）
-│   │   ├── ProfileForm/      # 用户画像表单（含埋点）
-│   │   ├── RecommendationSection/ # 个性化推荐区块（V6.2）
-│   │   ├── Report/           # 匹配报告（含 React.memo + 埋点）
-│   │   ├── ReportExportMenu/ # PDF/图片导出菜单（V6.2）
-│   │   ├── SkipLink/         # 无障碍跳过链接（V6.2）
-│   │   └── WebVitalsReporter/ # Web Vitals 监控（V6.2）
+│   │   ├── Dashboard/          # 数据看板（懒加载）
+│   │   ├── PolicyChat/         # AI 智能追问
+│   │   ├── ProfileForm/        # 用户画像表单
+│   │   ├── RecommendationSection/ # 个性化推荐
+│   │   ├── Report/             # 匹配报告
+│   │   ├── ReportExportMenu/   # PDF/图片导出
+│   │   ├── SkipLink/           # 无障碍跳过链接
+│   │   └── WebVitalsReporter/  # Web Vitals 监控
 │   ├── lib/
-│   │   ├── matcher/          # 匹配引擎（含 .test.ts 单元测试）
-│   │   ├── ai.ts             # AI 调用（含 7 天缓存）
-│   │   ├── analytics.ts      # 埋点客户端（V6.1）
-│   │   ├── data.server.ts    # 服务端数据加载（V6.2，SSG 用）
-│   │   ├── exportReport.ts   # 报告导出工具（V6.2）
-│   │   ├── rateLimit.ts      # IP 限流工具（V6.1）
-│   │   ├── recommender.ts    # 个性化推荐引擎（V6.2）
-│   │   ├── requestDedup.ts   # 请求去重工具（V6.1）
-│   │   └── store.ts          # Zustand 状态管理
-│   └── types/                # TypeScript 类型定义
-├── vitest.config.ts          # Vitest 配置（V6.1）
-└── start.bat                 # Windows 一键启动脚本
+│   │   ├── matcher/            # 匹配引擎（含单元测试）
+│   │   ├── ai.ts               # AI 调用（含 7 天缓存）
+│   │   ├── analytics.ts        # 埋点客户端
+│   │   ├── data.server.ts      # 服务端数据加载（SSG）
+│   │   ├── exportReport.ts     # 报告导出工具
+│   │   ├── rateLimit.ts        # IP 限流
+│   │   ├── recommender.ts      # 个性化推荐引擎
+│   │   ├── requestDedup.ts     # 请求去重
+│   │   └── store.ts            # Zustand 状态管理
+│   └── types/                  # TypeScript 类型定义
+├── vitest.config.ts            # Vitest 配置
+└── start.bat                   # Windows 一键启动
 ```
 
 ## 许可证
 
-MIT
+[MIT](LICENSE)
