@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { loadPolicies } from "@/lib/data";
 import { trackPageView } from "@/lib/analytics";
+import { matchAllPolicies } from "@/lib/matcher/ruleMatcher";
+import { calculateSummary } from "@/lib/matcher/scoreCalculator";
 import Report from "@/components/Report";
 import { Policy } from "@/types/policy";
+
 
 // 懒加载 Dashboard（含 ECharts ~400KB），仅在用户切到"数据看板"Tab 时加载
 const Dashboard = dynamic(() => import("@/components/Dashboard"), {
@@ -21,7 +24,7 @@ const Dashboard = dynamic(() => import("@/components/Dashboard"), {
 
 export default function ReportPage() {
   const router = useRouter();
-  const { matchResult, reset } = useAppStore();
+  const { matchResult, setMatchResult, reset } = useAppStore();
   const [allPolicies, setAllPolicies] = useState<Policy[]>([]);
 
   // V4：Tab 状态从 URL query 读取，刷新不丢
@@ -38,12 +41,28 @@ export default function ReportPage() {
     trackPageView("/report");
   }, []);
 
-  // 如果没有匹配结果，返回首页
+  // 如果没有匹配结果但政策数据已加载，自动初始化默认画像匹配（保证直接访问/刷新不丢失）
   useEffect(() => {
-    if (!matchResult) {
-      router.push("/");
+    if (!matchResult && allPolicies.length > 0) {
+      const defaultProf = {
+        identity: "应届毕业生",
+        education: "本科",
+        province: "北京",
+        city: "北京",
+        employmentStatus: "求职中",
+        industryIntent: "不限",
+      };
+      const matched = matchAllPolicies(allPolicies, defaultProf);
+      const { totalSubsidyEstimate, summary } = calculateSummary(matched, defaultProf);
+      setMatchResult({
+        userProfile: defaultProf,
+        matchedPolicies: matched,
+        totalSubsidyEstimate,
+        summary,
+      });
     }
-  }, [matchResult, router]);
+  }, [matchResult, allPolicies, setMatchResult]);
+
 
   // V4：切换 Tab 时更新 URL
   const handleTabChange = (tab: "report" | "dashboard") => {
